@@ -1,0 +1,6 @@
+@BiologyRecognition.Controllers_HostAddress = http://localhost:5094
+
+GET {{BiologyRecognition.Controllers_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
