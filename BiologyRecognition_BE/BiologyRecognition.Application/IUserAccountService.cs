@@ -1,4 +1,5 @@
 ﻿using BiologyRecognition.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,10 @@ namespace BiologyRecognition.Application
     public interface IUserAccountService
     {
         Task<List<UserAccount>> GetAllAsync();
+        Task <UserAccount> GetUserAccountByIdAsync(int id);
+        Task<UserAccount> GetUserAccountByNameOrEmailAsync(string nameOrEmails);
+        Task<int> CreateAsync(UserAccount userAccount);
+        Task<UserAccount> GetUserAccountByPhone(string phone);
+        Task<int> UpdateAsync(UserAccount userAccount);
     }
 }
