@@ -1,4 +1,4 @@
-﻿namespace BiologyRecognition.Controllers.Models
+﻿namespace BiologyRecognition.DTOs.UserAccount
 {
     public class UserAccountDTO
     {  public int UserAccountId { get; set; }

@@ -1,4 +1,5 @@
 using BiologyRecognition.Application;
+using BiologyRecognition.AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
 
 builder.Services.AddCors(options =>
 

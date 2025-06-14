@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Execution;
 using BiologyRecognition.Application;
-using BiologyRecognition.Controllers.Models;
+using BiologyRecognition.DTOs.UserAccount;
 using BiologyRecognition.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace BiologyRecognition.Controllers.Controllers
             {
                 return NotFound("Không tìm thấy tài khoản nào.");
             }
-            var dto = _mapper.Map <List<UserAccountDTO >>(accounts);
+            var dto = _mapper.Map<List<UserAccountDTO >>(accounts);
             return Ok(dto);
         }
 

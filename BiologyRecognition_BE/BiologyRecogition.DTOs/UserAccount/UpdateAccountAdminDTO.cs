@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BiologyRecognition.Controllers.Models
+namespace BiologyRecognition.DTOs.UserAccount
 {
-    public class UpdateAccountStudentDTO
+    public class UpdateAccountAdminDTO
     {
+        [Required]
         public int UserAccountId { get; set; }
         [Required(ErrorMessage = "Mật khẩu không được để trống")]
 
@@ -17,9 +18,25 @@ namespace BiologyRecognition.Controllers.Models
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
 
         public string Phone { get; set; }
+
+
+        [Required(ErrorMessage = "Mã nhân viên không được để trống")]
+        public string EmployeeCode { get; set; }
+
+        [Required(ErrorMessage = "Role không được để trống")]
+        public int? RoleId { get; set; }
+
+        [Required(ErrorMessage = "RequestCode không được để trống")]
+        public string RequestCode { get; set; }
+
+        [Required(ErrorMessage = "ApplicationCode không được để trống")]
+        public string ApplicationCode { get; set; }
+
         [Required(ErrorMessage = "Ngưởi sửa không được để trống")]
 
         public string ModifiedBy { get; set; }
+        [Required(ErrorMessage = "Trạng thái không được để trống")]
 
+        public bool? IsActive { get; set; }
     }
 }

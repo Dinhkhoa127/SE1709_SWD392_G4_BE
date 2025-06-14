@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using BiologyRecognition.Controllers.Models;
+using BiologyRecognition.DTOs.UserAccount;
 using BiologyRecognition.Domain.Entities;
-namespace BiologyRecognition.Controllers.Mapping
+namespace BiologyRecognition.AutoMapper
 {
-    public class Mapping : Profile
+    public class AutoMapperAccount : Profile
     {
-        public Mapping()
+        public AutoMapperAccount()
         {
               CreateMap<UserAccount, UserAccountDTO>();
 

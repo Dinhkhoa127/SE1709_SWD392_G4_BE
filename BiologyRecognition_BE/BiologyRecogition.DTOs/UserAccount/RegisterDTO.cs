@@ -1,7 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 
-namespace BiologyRecognition.Controllers.Models
+namespace BiologyRecognition.DTOs.UserAccount
 {
     public class RegisterDTO
     {
