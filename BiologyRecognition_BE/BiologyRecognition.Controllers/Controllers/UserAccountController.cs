@@ -7,16 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BiologyRecognition.Controllers.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user-accounts")]
     [ApiController]
     public class UserAccountController : ControllerBase
     {
         private readonly IUserAccountService _accountService;
         private readonly ILogger<UserAccountController> _logger;
         private readonly IMapper _mapper;
+
 
         public UserAccountController(ILogger<UserAccountController> logger, IUserAccountService userAccountService, IMapper mapper)
         {
@@ -25,7 +27,8 @@ namespace BiologyRecognition.Controllers.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("GetAllAccount")]
+      
+        [HttpGet]
         public async Task<IActionResult> GetAllAccountInfo()
         {
             var accounts = await _accountService.GetAllAsync();
@@ -37,7 +40,7 @@ namespace BiologyRecognition.Controllers.Controllers
             return Ok(dto);
         }
 
-        [HttpGet("GetAccountBy{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var account = await _accountService.GetUserAccountByIdAsync(id);
@@ -47,7 +50,7 @@ namespace BiologyRecognition.Controllers.Controllers
             var dto = _mapper.Map<UserAccountDTO>(account);
             return Ok(dto);
         }
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO loginAccount)
         {
             if (!ModelState.IsValid)
@@ -69,10 +72,11 @@ namespace BiologyRecognition.Controllers.Controllers
                 return Unauthorized("Tài khoản không hoạt động");
             }
             var dto = _mapper.Map<UserAccountDTO>(account);
+
             return Ok(dto);
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO newAccount)
         {
             if (!ModelState.IsValid)
@@ -109,14 +113,16 @@ namespace BiologyRecognition.Controllers.Controllers
             }
         }
 
-        [HttpPut("Update-student")]
-        public async Task<IActionResult> UpdateAccountByStudent([FromBody] UpdateAccountStudentDTO updateAccountStudent)
+        [HttpPut("{id}/student")]
+        public async Task<IActionResult> UpdateAccountByStudent(int id,[FromBody] UpdateAccountStudentDTO updateAccountStudent)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return BadRequest(new { message = errors });
             }
+            if (updateAccountStudent.UserAccountId != id)
+                return BadRequest(new { message = "ID không khớp giữa URL và body" });
 
             updateAccountStudent.Email = updateAccountStudent.Email?.Trim();
             updateAccountStudent.Phone = updateAccountStudent.Phone?.Trim();
@@ -145,8 +151,8 @@ namespace BiologyRecognition.Controllers.Controllers
             return BadRequest(new { message = "Cập nhật thất bại" });
         }
 
-        [HttpPut("Update-admin")]
-        public async Task<IActionResult> UpdateAccountByAdmin([FromBody] UpdateAccountAdminDTO updateAccountAdmin)
+        [HttpPut("{id}/admin")]
+        public async Task<IActionResult> UpdateAccountByAdmin(int id,[FromBody] UpdateAccountAdminDTO updateAccountAdmin)
         {
             if (!ModelState.IsValid)
             {

@@ -1,12 +1,23 @@
-using BiologyRecognition.Application;
+﻿using BiologyRecognition.Application;
 using BiologyRecognition.AutoMapper;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "🌿 Biology Recognition API",
+        Version = "v1.0",
+        Description = "An API for identifying plants and retrieving textbook content.",
+    });
+});
+
+
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
 

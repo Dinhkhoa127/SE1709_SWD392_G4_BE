@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiologyRecognition.Controllers", "BiologyRecognition.Controllers\BiologyRecognition.Controllers.csproj", "{6C5B03B7-7590-4CAD-871E-6E7F2C340804}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiologyRecognition.Controller", "BiologyRecognition.Controllers\BiologyRecognition.Controller.csproj", "{6C5B03B7-7590-4CAD-871E-6E7F2C340804}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiologyRecognition.Application", "BiologyRecognition.Application\BiologyRecognition.Application.csproj", "{AD11DD23-0B89-47D0-AC61-5C7C50442834}"
 EndProject
@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiologyRecognition.Infrastr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiologyRecognition.Domain", "BiologyRecognition.Domain\BiologyRecognition.Domain.csproj", "{C7664187-CE6D-4E79-A485-B57E02BCADC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiologyRecognition.DTOs", "BiologyRecogition.DTOs\BiologyRecognition.DTOs.csproj", "{E3F05613-A5FE-4236-ACF0-88DECB20C282}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiologyRecognition.DTOs", "BiologyRecogition.DTOs\BiologyRecognition.DTOs.csproj", "{E3F05613-A5FE-4236-ACF0-88DECB20C282}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiologyRecognigition.AutoMapper", "BiologyRecognigition.AutoMapper\BiologyRecognigition.AutoMapper.csproj", "{3B21BA53-AE15-43AD-A8B2-B9783C454178}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiologyRecognigition.AutoMapper", "BiologyRecognigition.AutoMapper\BiologyRecognigition.AutoMapper.csproj", "{3B21BA53-AE15-43AD-A8B2-B9783C454178}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
