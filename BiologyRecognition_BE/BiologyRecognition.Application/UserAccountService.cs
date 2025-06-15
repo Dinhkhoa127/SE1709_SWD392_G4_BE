@@ -1,5 +1,6 @@
 ﻿using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,26 @@ namespace BiologyRecognition.Application
         public async Task<List<UserAccount>> GetAllAsync()
         {
            return await _repository.GetAllAsync();
+        }
+        public async Task<UserAccount> GetUserAccountByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
+        public async Task<UserAccount> GetUserAccountByNameOrEmailAsync(string nameOrEmails)
+        {
+            return await _repository.GetUserAccountByNameOrEmailAsync(nameOrEmails);
+        }
+        public async Task<int> CreateAsync(UserAccount userAccount)
+        {
+            return await _repository.CreateAsync(userAccount);
+        }
+        public async Task<UserAccount> GetUserAccountByPhone(string phone)
+        {
+            return await _repository.GetUserAccountByPhone(phone);
+        }
+        public async Task<int> UpdateAsync(UserAccount userAccount)
+        {
+            return await _repository.UpdateAsync(userAccount);
         }
     }
 }

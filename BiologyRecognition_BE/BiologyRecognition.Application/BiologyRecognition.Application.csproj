@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BiologyRecognigition.AutoMapper\BiologyRecognigition.AutoMapper.csproj" />
     <ProjectReference Include="..\BiologyRecognition.Infrastructure\BiologyRecognition.Infrastructure.csproj" />
   </ItemGroup>
 
