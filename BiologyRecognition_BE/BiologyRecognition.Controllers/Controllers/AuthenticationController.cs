@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BiologyRecognition.Controller.Controllers
 {
@@ -106,6 +107,21 @@ namespace BiologyRecognition.Controller.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("current-user")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            try
+            {
+                var currentUser = await _authenticationService.GetCurrentUser();
+                return Ok(currentUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
     }

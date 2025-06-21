@@ -114,6 +114,8 @@ builder.Services.AddAuthentication(options =>
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));

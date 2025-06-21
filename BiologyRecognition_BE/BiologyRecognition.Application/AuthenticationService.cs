@@ -2,6 +2,7 @@
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.UserAccount;
 using BiologyRecognition.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -16,23 +17,25 @@ namespace BiologyRecognition.Application
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly UserAccountRepository _repository;
+        private readonly UserAccountRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        public AuthenticationService() => _repository ??= new UserAccountRepository();
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public AuthenticationService() => _userRepository ??= new UserAccountRepository();
 
-        public AuthenticationService(IConfiguration configuration, IMapper mapper)
+        public AuthenticationService(IConfiguration configuration, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
-            _repository ??= new UserAccountRepository();
+            _userRepository ??= new UserAccountRepository();
             _configuration = configuration;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<AccountResponseDTO> Login(LoginDTO loginDTO)
         {
             try
             {
-                var account = await _repository.GetUserAccountByNameOrEmailAsync(loginDTO.UserNameOrEmail);
+                var account = await _userRepository.GetUserAccountByNameOrEmailAsync(loginDTO.UserNameOrEmail);
                 if (account == null)
                 {
                     throw new ArgumentException("Invalid username or email.");
@@ -56,9 +59,9 @@ namespace BiologyRecognition.Application
         {
             try
             {
-                var existingUsername = await _repository.GetUserAccountByNameOrEmailAsync(registerDTO.UserName);
-                var existingEmail = await _repository.GetByEmailAsync(registerDTO.Email);
-                var existingEmployeeCode = await _repository.GetByEmployeeCodeAsync(registerDTO.EmployeeCode);
+                var existingUsername = await _userRepository.GetUserAccountByNameOrEmailAsync(registerDTO.UserName);
+                var existingEmail = await _userRepository.GetByEmailAsync(registerDTO.Email);
+                var existingEmployeeCode = await _userRepository.GetByEmployeeCodeAsync(registerDTO.EmployeeCode);
                 if (existingUsername != null || existingEmail != null)
                 {
                     throw new ArgumentException("Username or email already exists.");
@@ -74,7 +77,7 @@ namespace BiologyRecognition.Application
                 newAccount.ModifiedDate = DateTime.Now; // Set created date to now
                 newAccount.ModifiedBy = "System";
                 newAccount.RoleId = 2; // Default role registered là user
-                await _repository.CreateAsync(newAccount);
+                await _userRepository.CreateAsync(newAccount);
                 return registerDTO;
             }
             catch (Exception ex)
@@ -116,7 +119,7 @@ namespace BiologyRecognition.Application
 
         public async Task<AccountResponseDTO> LoginWithGoolgle(string email, string name)
         {
-            var account = await _repository.GetUserAccountByNameOrEmailAsync(email);
+            var account = await _userRepository.GetUserAccountByNameOrEmailAsync(email);
             string accessToken = string.Empty;
             if (account == null)
             {
@@ -133,7 +136,7 @@ namespace BiologyRecognition.Application
                     ModifiedBy = "Google",
                     RoleId = 2 // Default role registered là user
                 };
-                await _repository.CreateAsync(newAccount);
+                await _userRepository.CreateAsync(newAccount);
                 accessToken = await GenerateToken(_mapper.Map<AccountResponseDTO>(newAccount));
                 var accountResponse = _mapper.Map<AccountResponseDTO>(newAccount);
                 accountResponse.AccessToken = accessToken;
@@ -146,6 +149,28 @@ namespace BiologyRecognition.Application
                 var accountResponse = _mapper.Map<AccountResponseDTO>(account);
                 accountResponse.AccessToken = accessToken;
                 return accountResponse;
+            }
+        }
+
+        public async Task<AccountResponseDTO> GetCurrentUser()
+        {
+            try
+            {
+                var userEmail = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(userEmail))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+                var userAccount = await _userRepository.GetByEmailAsync(userEmail);
+                if (userAccount == null)
+                {
+                    throw new ArgumentException("User account not found.");
+                }
+                return _mapper.Map<AccountResponseDTO>(userAccount);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException(ex.Message);
             }
         }
     }

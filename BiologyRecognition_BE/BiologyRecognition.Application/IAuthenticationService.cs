@@ -12,7 +12,8 @@ namespace BiologyRecognition.Application
         Task<AccountResponseDTO> Login(LoginDTO loginDTO);
         Task<RegisterDTO> Register(RegisterDTO registerDTO);
         Task<string> GenerateToken(AccountResponseDTO accountResponseDTO);
-
         Task<AccountResponseDTO> LoginWithGoolgle(string email, string name);
+
+        Task<AccountResponseDTO> GetCurrentUser();
     }
 }
