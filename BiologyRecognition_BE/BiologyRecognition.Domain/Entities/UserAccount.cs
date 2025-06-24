@@ -21,7 +21,7 @@ public partial class UserAccount
 
     public string EmployeeCode { get; set; }
 
-    public int? RoleId { get; set; }
+    public int RoleId { get; set; }
 
     public string RequestCode { get; set; }
 
@@ -35,7 +35,7 @@ public partial class UserAccount
 
     public string ModifiedBy { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public virtual ICollection<Article> ArticleCreatedByNavigations { get; set; } = new List<Article>();
 

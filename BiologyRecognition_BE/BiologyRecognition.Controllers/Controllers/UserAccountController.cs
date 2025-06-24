@@ -16,19 +16,19 @@ namespace BiologyRecognition.Controllers.Controllers
     public class UserAccountController : ControllerBase
     {
         private readonly IUserAccountService _accountService;
-        private readonly ILogger<UserAccountController> _logger;
         private readonly IMapper _mapper;
 
 
-        public UserAccountController(ILogger<UserAccountController> logger, IUserAccountService userAccountService, IMapper mapper)
+        public UserAccountController( IUserAccountService userAccountService, IMapper mapper)
         {
-            _logger = logger;
+           
             _accountService = userAccountService;
             _mapper = mapper;
         }
 
       
         [HttpGet]
+        //[Authorize]
         public async Task<IActionResult> GetAllAccountInfo()
         {
             var accounts = await _accountService.GetAllAsync();
@@ -50,68 +50,7 @@ namespace BiologyRecognition.Controllers.Controllers
             var dto = _mapper.Map<UserAccountDTO>(account);
             return Ok(dto);
         }
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDTO loginAccount)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors)
-                                              .Select(e => e.ErrorMessage)
-                                              .ToList();
-                return BadRequest(new { message = errors });
-            }
-
-            var account = await _accountService.GetUserAccountByNameOrEmailAsync(loginAccount.UserNameOrEmail);
-            if (account == null || account.Password != loginAccount.Password)
-            {
-                return Unauthorized("Sai tên đăng nhập hoặc mật khẩu.");
-            }
-
-            if (account.IsActive != true)
-            {
-                return Unauthorized("Tài khoản không hoạt động");
-            }
-            var dto = _mapper.Map<UserAccountDTO>(account);
-
-            return Ok(dto);
-        }
-
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO newAccount)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors)
-                                              .Select(e => e.ErrorMessage)
-                                              .ToList();
-                return BadRequest(new { message = errors });
-            }
-            newAccount.Email = newAccount.Email?.Trim();
-            newAccount.Phone = newAccount.Phone?.Trim();
-            if (!Regex.IsMatch(newAccount.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                return BadRequest(new { message = "Email không đúng định dạng" });
-            if (await _accountService.GetUserAccountByNameOrEmailAsync(newAccount.UserName) != null)
-                return BadRequest(new { message = "Tên đăng nhập đã tồn tại" });
-
-            if (await _accountService.GetUserAccountByNameOrEmailAsync(newAccount.Email) != null)
-                return BadRequest(new { message = "Email đã tồn tại" });
-            var phoneExists = await _accountService.GetUserAccountByPhone(newAccount.Phone.Trim());
-            if (phoneExists != null)
-            {
-                return BadRequest(new { message = "Số điện thoại đã được sử dụng" });
-            }
-            var userAccount = _mapper.Map<UserAccount>(newAccount);
-
-            var result = await _accountService.CreateAsync(userAccount);
-            if (result > 0)
-            {
-                return Ok(new { message = "Tạo tài khoản thành công" });
-            }
-            else
-            {
-                return BadRequest(new { message = "Tạo tài khoản thất bại" });
-            }
-        }
+    
 
         [HttpPut("{id}/student")]
         public async Task<IActionResult> UpdateAccountByStudent(int id,[FromBody] UpdateAccountStudentDTO updateAccountStudent)

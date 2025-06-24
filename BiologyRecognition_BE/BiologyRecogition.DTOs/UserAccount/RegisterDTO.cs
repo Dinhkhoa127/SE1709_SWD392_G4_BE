@@ -19,7 +19,7 @@ namespace BiologyRecognition.DTOs.UserAccount
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "Số điện thoại phải gồm 10 chữ số")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải gồm 10 chữ số và bắt đầu bằng 0")]
         public string Phone { get; set; }
 
         [Required(ErrorMessage = "Mã nhân viên không được để trống")]
@@ -34,8 +34,6 @@ namespace BiologyRecognition.DTOs.UserAccount
         [Required(ErrorMessage = "ApplicationCode không được để trống")]
         public string ApplicationCode { get; set; }
 
-        [Required(ErrorMessage = "Người tạo không được để trống")]
-        public string CreatedBy { get; set; }
     }
 
 }

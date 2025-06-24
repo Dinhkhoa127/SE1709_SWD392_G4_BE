@@ -27,7 +27,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[ArtifactImage]",
+         "Name": "[dbo].[ArtifactMedia]",
          "ObjectType": 0
       },
       {

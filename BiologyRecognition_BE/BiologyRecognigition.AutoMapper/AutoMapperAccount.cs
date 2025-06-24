@@ -25,6 +25,15 @@ namespace BiologyRecognition.AutoMapper
 
             CreateMap<UpdateAccountAdminDTO, UserAccount>()
            .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+            CreateMap<UserAccount, UpdateAccountAdminDTO>()
+                .ForMember(dest => dest.Password, opt => opt.Ignore());
+
+            CreateMap<RegisterDTO, UserAccount>();
+
+            CreateMap<UserAccount, AccountResponseDTO>()
+            .ForMember(dest => dest.AccessToken, opt => opt.Ignore());
+
         }
     }
 }

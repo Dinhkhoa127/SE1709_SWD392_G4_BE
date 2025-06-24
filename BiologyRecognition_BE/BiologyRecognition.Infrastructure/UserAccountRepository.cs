@@ -23,5 +23,15 @@ namespace BiologyRecognition.Infrastructure
         {
             return await _context.UserAccounts.FirstOrDefaultAsync(u => u.Phone == phone.Trim());
         }
+
+        public async Task<UserAccount> GetByEmailAsync(string email)
+        {
+            return await _context.UserAccounts.FirstOrDefaultAsync(u => u.Email == email.Trim());
+        }
+
+        public async Task<UserAccount> GetByEmployeeCodeAsync(string employeeCode)
+        {
+            return await _context.UserAccounts.FirstOrDefaultAsync(u => u.EmployeeCode == employeeCode.Trim());
+        }
     }
 }
