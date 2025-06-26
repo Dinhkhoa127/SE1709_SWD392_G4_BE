@@ -14,6 +14,7 @@ namespace BiologyRecognition.Application
         Task <UserAccount> GetUserAccountByIdAsync(int id);
         Task<UserAccount> GetUserAccountByNameOrEmailAsync(string nameOrEmails);
         Task<int> CreateAsync(UserAccount userAccount);
+        Task<int> CreateAccountByAdminAsync(UserAccount userAccount);
         Task<UserAccount> GetUserAccountByPhone(string phone);
         Task<int> UpdateAsync(UserAccount userAccount);
     }

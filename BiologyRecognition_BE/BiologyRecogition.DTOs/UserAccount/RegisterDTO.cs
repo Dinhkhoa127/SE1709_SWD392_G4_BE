@@ -22,17 +22,12 @@ namespace BiologyRecognition.DTOs.UserAccount
         [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải gồm 10 chữ số và bắt đầu bằng 0")]
         public string Phone { get; set; }
 
-        [Required(ErrorMessage = "Mã nhân viên không được để trống")]
-        public string EmployeeCode { get; set; }
-
         [Required(ErrorMessage = "Role không được để trống")]
         public int? RoleId { get; set; }
 
-        [Required(ErrorMessage = "RequestCode không được để trống")]
-        public string RequestCode { get; set; }
+    
 
-        [Required(ErrorMessage = "ApplicationCode không được để trống")]
-        public string ApplicationCode { get; set; }
+    
 
     }
 

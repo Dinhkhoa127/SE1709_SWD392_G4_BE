@@ -126,7 +126,7 @@ builder.Services.AddScoped<IRecognitionService, RecognitionService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
 builder.Services.AddAutoMapper(typeof(AutoMapperSubject));
 builder.Services.AddAutoMapper(typeof(AutoMapperChapter));
-
+builder.Services.AddAutoMapper(typeof(EmailToUsernameResolver));
 
 
 builder.Services.AddCors(options =>

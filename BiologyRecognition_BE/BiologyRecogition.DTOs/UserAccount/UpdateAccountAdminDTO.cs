@@ -19,20 +19,9 @@ namespace BiologyRecognition.DTOs.UserAccount
 
         public string Phone { get; set; }
 
-
-        [Required(ErrorMessage = "Mã nhân viên không được để trống")]
-        public string EmployeeCode { get; set; }
-
         [Required(ErrorMessage = "Role không được để trống")]
         public int? RoleId { get; set; }
 
-        [Required(ErrorMessage = "RequestCode không được để trống")]
-        public string RequestCode { get; set; }
-
-        [Required(ErrorMessage = "ApplicationCode không được để trống")]
-        public string ApplicationCode { get; set; }
-
-      
         [Required(ErrorMessage = "Trạng thái không được để trống")]
 
         public bool? IsActive { get; set; }

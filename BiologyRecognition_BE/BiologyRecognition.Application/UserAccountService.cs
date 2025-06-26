@@ -1,9 +1,11 @@
 ﻿using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs.UserAccount;
 using BiologyRecognition.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,12 +32,18 @@ namespace BiologyRecognition.Application
         {
             return await _repository.CreateAsync(userAccount);
         }
+        public async Task<int> CreateAccountByAdminAsync(UserAccount userAccount)
+        {
+            userAccount.Password = BCrypt.Net.BCrypt.HashPassword(userAccount.Password);
+            return await _repository.CreateAsync(userAccount);
+        }
         public async Task<UserAccount> GetUserAccountByPhone(string phone)
         {
             return await _repository.GetUserAccountByPhone(phone);
         }
         public async Task<int> UpdateAsync(UserAccount userAccount)
         {
+            userAccount.Password = BCrypt.Net.BCrypt.HashPassword(userAccount.Password);
             return await _repository.UpdateAsync(userAccount);
         }
     }
