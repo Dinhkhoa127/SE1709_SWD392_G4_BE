@@ -6,7 +6,7 @@
    "IncludeConnectionString": true,
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Models",
+   "OutputPath": "Entite",
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "BiologyRecognition.Domain",
    "Schemas": null,

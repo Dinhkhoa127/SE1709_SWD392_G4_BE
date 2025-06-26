@@ -32,9 +32,7 @@ namespace BiologyRecognition.DTOs.UserAccount
         [Required(ErrorMessage = "ApplicationCode không được để trống")]
         public string ApplicationCode { get; set; }
 
-        [Required(ErrorMessage = "Ngưởi sửa không được để trống")]
-
-        public string ModifiedBy { get; set; }
+      
         [Required(ErrorMessage = "Trạng thái không được để trống")]
 
         public bool? IsActive { get; set; }

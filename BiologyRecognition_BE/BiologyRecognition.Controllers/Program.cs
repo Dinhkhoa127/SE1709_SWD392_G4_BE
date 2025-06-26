@@ -1,6 +1,7 @@
 ﻿using BiologyRecognigition.AutoMapper;
 using BiologyRecognition.Application;
 using BiologyRecognition.AutoMapper;
+using BiologyRecognition.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -120,9 +121,11 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
+builder.Services.AddScoped<IChapterService, ChapterService>();
+builder.Services.AddScoped<IRecognitionService, RecognitionService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
-builder.Services.AddAutoMapper(typeof(AutoMappperSubject));
-
+builder.Services.AddAutoMapper(typeof(AutoMapperSubject));
+builder.Services.AddAutoMapper(typeof(AutoMapperChapter));
 
 
 

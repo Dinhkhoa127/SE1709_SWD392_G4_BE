@@ -29,9 +29,6 @@ namespace BiologyRecognition.Infrastructure
             return await _context.UserAccounts.FirstOrDefaultAsync(u => u.Email == email.Trim());
         }
 
-        public async Task<UserAccount> GetByEmployeeCodeAsync(string employeeCode)
-        {
-            return await _context.UserAccounts.FirstOrDefaultAsync(u => u.EmployeeCode == employeeCode.Trim());
-        }
+        
     }
 }

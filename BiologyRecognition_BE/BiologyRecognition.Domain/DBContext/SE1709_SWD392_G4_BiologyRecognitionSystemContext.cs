@@ -54,7 +54,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
     {
         modelBuilder.Entity<Article>(entity =>
         {
-            entity.HasKey(e => e.ArticleId).HasName("PK__Article__CC36F660D0CABB7F");
+            entity.HasKey(e => e.ArticleId).HasName("PK__Article__CC36F660BE5BD8AB");
 
             entity.ToTable("Article");
 
@@ -91,7 +91,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
                         .HasConstraintName("FK__ArticleAr__artic__59FA5E80"),
                     j =>
                     {
-                        j.HasKey("ArticleId", "ArtifactId").HasName("PK__ArticleA__2631BC160BFFC6E1");
+                        j.HasKey("ArticleId", "ArtifactId").HasName("PK__ArticleA__2631BC16A158CA0E");
                         j.ToTable("ArticleArtifact");
                         j.IndexerProperty<int>("ArticleId").HasColumnName("article_id");
                         j.IndexerProperty<int>("ArtifactId").HasColumnName("artifact_id");
@@ -100,7 +100,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<Artifact>(entity =>
         {
-            entity.HasKey(e => e.ArtifactId).HasName("PK__Artifact__A074A76F74FC7D61");
+            entity.HasKey(e => e.ArtifactId).HasName("PK__Artifact__A074A76FE042A064");
 
             entity.ToTable("Artifact");
 
@@ -136,7 +136,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<ArtifactMedia>(entity =>
         {
-            entity.HasKey(e => e.ArtifactMediaId).HasName("PK__Artifact__6FE8719707C9A7E4");
+            entity.HasKey(e => e.ArtifactMediaId).HasName("PK__Artifact__6FE871972B848765");
 
             entity.Property(e => e.ArtifactMediaId).HasColumnName("artifactMedia_id");
             entity.Property(e => e.ArtifactId).HasColumnName("artifact_id");
@@ -158,7 +158,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<ArtifactType>(entity =>
         {
-            entity.HasKey(e => e.ArtifactTypeId).HasName("PK__Artifact__DFAFE690C271E222");
+            entity.HasKey(e => e.ArtifactTypeId).HasName("PK__Artifact__DFAFE690C1795588");
 
             entity.ToTable("ArtifactType");
 
@@ -178,7 +178,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<Chapter>(entity =>
         {
-            entity.HasKey(e => e.ChapterId).HasName("PK__Chapter__745EFE8799C2F516");
+            entity.HasKey(e => e.ChapterId).HasName("PK__Chapter__745EFE87B59FEFAC");
 
             entity.ToTable("Chapter");
 
@@ -211,7 +211,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<Recognition>(entity =>
         {
-            entity.HasKey(e => e.RecognitionId).HasName("PK__Recognit__73D1F5ADF8E1C10D");
+            entity.HasKey(e => e.RecognitionId).HasName("PK__Recognit__73D1F5ADB10384F4");
 
             entity.ToTable("Recognition");
 
@@ -245,7 +245,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<Subject>(entity =>
         {
-            entity.HasKey(e => e.SubjectId).HasName("PK__Subject__5004F66021B96CA2");
+            entity.HasKey(e => e.SubjectId).HasName("PK__Subject__5004F66062AD2F7F");
 
             entity.ToTable("Subject");
 
@@ -272,7 +272,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<Topic>(entity =>
         {
-            entity.HasKey(e => e.TopicId).HasName("PK__Topic__D5DAA3E9800F4B03");
+            entity.HasKey(e => e.TopicId).HasName("PK__Topic__D5DAA3E96A400B96");
 
             entity.ToTable("Topic");
 
@@ -305,27 +305,22 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<UserAccount>(entity =>
         {
-            entity.HasKey(e => e.UserAccountId).HasName("PK__UserAcco__DA6C70BA06C03E54");
+            entity.HasKey(e => e.UserAccountId).HasName("PK__UserAcco__DA6C70BAFFEBADFE");
 
             entity.ToTable("UserAccount");
 
             entity.Property(e => e.UserAccountId).HasColumnName("UserAccountID");
-            entity.Property(e => e.ApplicationCode).HasMaxLength(50);
-            entity.Property(e => e.CreatedBy).HasMaxLength(50);
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.EmployeeCode).HasMaxLength(50);
             entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
-            entity.Property(e => e.ModifiedBy).HasMaxLength(50);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.Password)
                 .IsRequired()
                 .HasMaxLength(255);
             entity.Property(e => e.Phone).HasMaxLength(20);
-            entity.Property(e => e.RequestCode).HasMaxLength(50);
             entity.Property(e => e.RoleId).HasDefaultValue(2);
             entity.Property(e => e.UserName)
                 .IsRequired()

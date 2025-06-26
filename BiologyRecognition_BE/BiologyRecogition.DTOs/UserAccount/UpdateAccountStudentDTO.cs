@@ -17,9 +17,7 @@ namespace BiologyRecognition.DTOs.UserAccount
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
 
         public string Phone { get; set; }
-        [Required(ErrorMessage = "Ngưởi sửa không được để trống")]
-
-        public string ModifiedBy { get; set; }
+    
 
     }
 }

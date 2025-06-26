@@ -18,9 +18,6 @@ namespace BiologyRecognition.AutoMapper
              .ForMember(dest => dest.UserAccountId, opt => opt.Ignore())
              .ForMember(dest => dest.RoleId, opt => opt.Ignore()) 
              .ForMember(dest => dest.IsActive, opt => opt.Ignore())
-             .ForMember(dest => dest.RequestCode, opt => opt.Ignore())
-             .ForMember(dest => dest.ApplicationCode, opt => opt.Ignore())
-             .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
              .ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
 
             CreateMap<UpdateAccountAdminDTO, UserAccount>()

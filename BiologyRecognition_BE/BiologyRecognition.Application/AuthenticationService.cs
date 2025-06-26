@@ -61,21 +61,16 @@ namespace BiologyRecognition.Application
             {
                 var existingUsername = await _userRepository.GetUserAccountByNameOrEmailAsync(registerDTO.UserName);
                 var existingEmail = await _userRepository.GetByEmailAsync(registerDTO.Email);
-                var existingEmployeeCode = await _userRepository.GetByEmployeeCodeAsync(registerDTO.EmployeeCode);
+
                 if (existingUsername != null || existingEmail != null)
                 {
                     throw new ArgumentException("Username or email already exists.");
                 }
-                if (existingEmployeeCode != null)
-                {
-                    throw new ArgumentException("Employee code already exists.");
-                }
+                
                 var newAccount = _mapper.Map<UserAccount>(registerDTO);
                 newAccount.Password = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
                 newAccount.IsActive = true; // Set default active status
-                newAccount.CreatedBy = "System"; // Default created by system
                 newAccount.ModifiedDate = DateTime.Now; // Set created date to now
-                newAccount.ModifiedBy = "System";
                 newAccount.RoleId = 2; // Default role registered là user
                 await _userRepository.CreateAsync(newAccount);
                 return registerDTO;
@@ -132,8 +127,6 @@ namespace BiologyRecognition.Application
                     IsActive = true,
                     ModifiedDate = DateTime.Now,
                     Password = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()), // Tạo mật khẩu ngẫu nhiên
-                    CreatedBy = "Google",
-                    ModifiedBy = "Google",
                     RoleId = 2 // Default role registered là user
                 };
                 await _userRepository.CreateAsync(newAccount);

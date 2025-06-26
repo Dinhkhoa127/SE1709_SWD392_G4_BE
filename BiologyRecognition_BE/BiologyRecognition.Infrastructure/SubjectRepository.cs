@@ -17,15 +17,37 @@ namespace BiologyRecognition.Infrastructure
 
         public async Task<Subject> GetSubjectByNameAsync(string name)
         {
-            return await _context.Subjects.FirstOrDefaultAsync(u => u.Name == name);
+            return await _context.Subjects
+                .Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation)
+                .FirstOrDefaultAsync(u => u.Name == name);
         }
         public async Task<List<Subject>> GetListSubjectByContainNameAsync(string name)
         {
-            return await _context.Subjects
+            return await _context.Subjects.Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation)
                 .Where(u => u.Name.ToLower().Contains(name.ToLower()))
                 .ToListAsync();
         }
+        public async Task<List<Subject>> GetAllAsync()
+        {
+            return await _context.Subjects.Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation).ToListAsync();
+        }
+        public async Task<Subject> GetByIdAsync(int id)
+        {
+            return await _context.Subjects.Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation).FirstOrDefaultAsync(h => h.SubjectId == id);
+        }
+        public async Task<int> UpdateAsync(Subject subject)
+        {
+            subject.ModifiedByNavigation = null;
+            var existing = await _context.Chapters.FindAsync(subject.SubjectId);
+            if (existing == null) return 0;
 
-      
+            _context.Subjects.Update(subject);
+
+            return await _context.SaveChangesAsync();
+        }
     }
 }
