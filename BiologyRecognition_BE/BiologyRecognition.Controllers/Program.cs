@@ -124,13 +124,19 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 builder.Services.AddScoped<IRecognitionService, RecognitionService>();
 builder.Services.AddScoped<ITopicService, TopicService>();
+builder.Services.AddScoped<IArtifactTypeService, ArtifactTypeService>();
+builder.Services.AddScoped<IArtifactService , ArtifactService>();
+builder.Services.AddScoped<IArtifactMediaService, ArtifactMediaService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
 builder.Services.AddAutoMapper(typeof(AutoMapperSubject));
 builder.Services.AddAutoMapper(typeof(AutoMapperChapter));
 builder.Services.AddAutoMapper(typeof(EmailToUsernameResolver));
 builder.Services.AddAutoMapper(typeof(AutoMapperTopic));
-
-
+builder.Services.AddAutoMapper(typeof(AutoMapperArtifactType));
+builder.Services.AddAutoMapper(typeof(AutoMapperArtifact));
+builder.Services.AddAutoMapper(typeof(AutoMapperArtifactMedia));
+builder.Services.AddAutoMapper(typeof(AutoMapperArticle));
 builder.Services.AddCors(options =>
 
 {

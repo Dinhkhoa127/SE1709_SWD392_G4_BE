@@ -37,4 +37,5 @@ public partial class Artifact
     public virtual ICollection<Recognition> Recognitions { get; set; } = new List<Recognition>();
 
     public virtual ICollection<Article> Articles { get; set; } = new List<Article>();
+
 }

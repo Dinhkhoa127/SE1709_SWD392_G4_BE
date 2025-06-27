@@ -26,4 +26,5 @@ public partial class Article
     public virtual UserAccount ModifiedByNavigation { get; set; }
 
     public virtual ICollection<Artifact> Artifacts { get; set; } = new List<Artifact>();
+
 }

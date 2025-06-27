@@ -42,7 +42,7 @@ namespace BiologyRecognition.Infrastructure
         public async Task<int> UpdateAsync(Subject subject)
         {
             subject.ModifiedByNavigation = null;
-            var existing = await _context.Chapters.FindAsync(subject.SubjectId);
+            var existing = await _context.Subjects.FindAsync(subject.SubjectId);
             if (existing == null) return 0;
 
             _context.Subjects.Update(subject);

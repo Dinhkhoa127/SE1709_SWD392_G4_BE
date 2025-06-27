@@ -18,7 +18,6 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
         : base(options)
     {
     }
-
     public virtual DbSet<Article> Articles { get; set; }
 
     public virtual DbSet<Artifact> Artifacts { get; set; }
@@ -326,7 +325,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
                 .IsRequired()
                 .HasMaxLength(50);
         });
-
+        
         OnModelCreatingPartial(modelBuilder);
     }
 
