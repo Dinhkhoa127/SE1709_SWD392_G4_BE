@@ -2,6 +2,7 @@
 using BiologyRecognition.Application;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.Chapter;
+using BiologyRecognition.DTOs.Topic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BiologyRecognition.Controller.Controllers
@@ -47,18 +48,18 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dto);
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> GetChapterByName([FromQuery] string name)
-        {
-            var chapter = await _chapterService.GetChapterByNameAsync(name);
-            if (chapter == null)
-                return NotFound("Không tìm thấy bài với tên đã nhập.");
+        //[HttpGet("search")]
+        //public async Task<IActionResult> GetChapterByName([FromQuery] string name)
+        //{
+        //    var chapter = await _chapterService.GetChapterByNameAsync(name);
+        //    if (chapter == null)
+        //        return NotFound("Không tìm thấy bài với tên đã nhập.");
 
-            var dto = _mapper.Map<ChapterDTO>(chapter);
-            return Ok(dto);
-        }
+        //    var dto = _mapper.Map<ChapterDTO>(chapter);
+        //    return Ok(dto);
+        //}
 
-        [HttpGet("filter")]
+        [HttpGet("filter-name")]
         public async Task<IActionResult> GetChaptersByContainName([FromQuery] string name)
         {
             var list = await _chapterService.GetListChaptersByContainNameAsync(name);
@@ -118,6 +119,17 @@ namespace BiologyRecognition.Controller.Controllers
                 return Ok(new { message = "Cập nhật bài thành công." });
 
             return BadRequest(new { message = "Cập nhật bài thất bại." });
+        }
+        [HttpGet("by-subject/{subjectId}")]
+        public async Task<IActionResult> GetTopicsByChapterId(int subjectId)
+        {
+            var chapters = await _chapterService.GetListChaptersBySubjectIdAsync(subjectId);
+
+            if (chapters == null || chapters.Count == 0)
+                return NotFound("Không có bài nào trong chương này.");
+
+            var dto = _mapper.Map<List<ChapterDTO>>(chapters);
+            return Ok(dto);
         }
 
     }

@@ -47,20 +47,33 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dto);
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> GetSubjectByName([FromQuery] string name)
-        {
-            var subject = await _subjectService.GetSubjectByNameAsync(name);
-            if (subject == null)
-                return NotFound("Không tìm thấy môn học với tên đã nhập.");
+        //[HttpGet("search")]
+        //public async Task<IActionResult> GetSubjectByName([FromQuery] string name)
+        //{
+        //    var subject = await _subjectService.GetSubjectByNameAsync(name);
+        //    if (subject == null)
+        //        return NotFound("Không tìm thấy môn học với tên đã nhập.");
 
-            var dto = _mapper.Map<SubjectDTO>(subject);
-            return Ok(dto);
-        }
+        //    var dto = _mapper.Map<SubjectDTO>(subject);
+        //    return Ok(dto);
+        //}
+        //[HttpDelete("admin/{subjectId}")]
+        //public async Task<IActionResult> DeleteSubjectByAdmin(int subjectId)
+        //{
+        //    // Kiểm tra subject tồn tại
+        //    var subject = await _subjectService.GetSubjectByIdAsync(subjectId);
+        //    if (subject == null)
+        //        return NotFound(new { message = "Không tìm thấy môn học" });
 
-        
+        //    // Gọi service để xóa
+        //    var result = await _subjectService.DeleteAsync(subject);
+        //    if (result)
+        //        return Ok(new { message = "Xóa môn học thành công" });
 
-        [HttpGet("filter")]
+        //    return BadRequest(new { message = "Xóa môn học thất bại" });
+        //}
+
+        [HttpGet("filter-name")]
         public async Task<IActionResult> GetSubjectsByContainName([FromQuery] string name)
         {
             var list = await _subjectService.GetListSubjectByContainNameAsync(name);

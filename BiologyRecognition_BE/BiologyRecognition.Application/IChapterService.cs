@@ -12,11 +12,12 @@ namespace BiologyRecognition.Application
     {
   
 
-        Task<int> CreateAsync(Chapter subject);
-        Task<int> UpdateAsync(Chapter subject);
+        Task<int> CreateAsync(Chapter chapter);
+        Task<int> UpdateAsync(Chapter chapter);
         Task<List<Chapter>> GetAllAsync();
         Task<Chapter> GetChapterByNameAsync(string name);
         Task<List<Chapter>> GetListChaptersByContainNameAsync(string name);
         Task<Chapter> GetByIdAsync(int id);
+        Task<List<Chapter>> GetListChaptersBySubjectIdAsync(int id);
     }
 }

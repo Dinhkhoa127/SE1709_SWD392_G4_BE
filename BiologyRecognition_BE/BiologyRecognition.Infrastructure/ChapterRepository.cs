@@ -42,6 +42,15 @@ namespace BiologyRecognition.Infrastructure
         {
             return await _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation).Include(c => c.ModifiedByNavigation).ToListAsync();
         }
+
+        public async Task<List<Chapter>> GetListChaptersBySubjectIdAsync(int id)
+        {
+            return await _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation)
+                .Where(u => u.SubjectId == id)
+                .ToListAsync();
+        }
+
         public async Task<Chapter> GetByIdAsync(int id)
         {
             return await _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation)

@@ -42,5 +42,9 @@ namespace BiologyRecognition.Application
         {
             return _repository.GetListSubjectByContainNameAsync(name);
         }
+        public Task<bool> DeleteAsync(Subject subject)
+        {
+            return _repository.RemoveAsync(subject);
+        }
     }
 }

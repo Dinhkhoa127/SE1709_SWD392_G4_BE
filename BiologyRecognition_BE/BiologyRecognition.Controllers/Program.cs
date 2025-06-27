@@ -123,10 +123,12 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 builder.Services.AddScoped<IRecognitionService, RecognitionService>();
+builder.Services.AddScoped<ITopicService, TopicService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
 builder.Services.AddAutoMapper(typeof(AutoMapperSubject));
 builder.Services.AddAutoMapper(typeof(AutoMapperChapter));
 builder.Services.AddAutoMapper(typeof(EmailToUsernameResolver));
+builder.Services.AddAutoMapper(typeof(AutoMapperTopic));
 
 
 builder.Services.AddCors(options =>

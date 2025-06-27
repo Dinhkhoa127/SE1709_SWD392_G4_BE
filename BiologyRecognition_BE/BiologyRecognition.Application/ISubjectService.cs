@@ -16,6 +16,7 @@ namespace BiologyRecognition.Application
      
         Task<int> CreateAsync(Subject subject);
         Task<int> UpdateAsync(Subject subject);
+        Task<bool>DeleteAsync(Subject subject);
         Task<List<Subject>> GetListSubjectByContainNameAsync(string name);
        
     }

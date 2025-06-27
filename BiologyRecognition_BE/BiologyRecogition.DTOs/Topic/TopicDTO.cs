@@ -4,19 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.DTOs.Chapter
+namespace BiologyRecognition.DTOs.Topic
 {
-    public class ChapterDTO
+    public class TopicDTO
     {
-       
-            public int ChapterId { get; set; }
-
-            public int SubjectId { get; set; }
-
-            public string Name { get; set; }
-            public string SubjectName { get; set; }
-            public string Description { get; set; }
-
+        public int TopicId { get; set; }
+        public int ChapterId { get; set; }
+        public string Name { get; set; }
+        public string ChapterName { get; set; }
+        public string Description { get; set; }
         public int CreatedBy { get; set; }
         public string CreatedName { get; set; }
 
@@ -26,7 +22,5 @@ namespace BiologyRecognition.DTOs.Chapter
         public string ModifiedName { get; set; }
 
         public DateTime? ModifiedDate { get; set; }
-       
-
     }
 }
