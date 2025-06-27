@@ -9,6 +9,7 @@ namespace BiologyRecognition.DTOs.Topic
 {
     public class UpdateTopicDTO
     {
+        [Required(ErrorMessage = "TopicId là bắt buộc.")]
         public int TopicId { get; set; }
         [Required(ErrorMessage = "Bài là bắt buộc.")]
         public int ChapterId { get; set; }

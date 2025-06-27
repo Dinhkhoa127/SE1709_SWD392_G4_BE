@@ -9,7 +9,7 @@ namespace BiologyRecognition.DTOs.Chapter
 {
     public class UpdateChapterDTO
     {
-       
+        [Required(ErrorMessage = "ChapterId là bắt buộc.")]
         public int ChapterId { get; set; }
         [Required(ErrorMessage = "Chương là bắt buộc.")]
         public int SubjectId { get; set; }

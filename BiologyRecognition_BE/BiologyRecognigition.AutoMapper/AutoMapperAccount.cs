@@ -23,12 +23,24 @@ namespace BiologyRecognition.AutoMapper
 
 
 
-            CreateMap<UpdateAccountStudentDTO, UserAccount>()
+            CreateMap<UpdateAccountStudentNoPwDTO, UserAccount>()
              .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => DateTime.Now))
              .ForMember(dest => dest.UserAccountId, opt => opt.Ignore())
              .ForMember(dest => dest.RoleId, opt => opt.Ignore())
              .ForMember(dest => dest.IsActive, opt => opt.Ignore())
-             .ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
+             .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+             .ForMember(dest => dest.Password, opt => opt.Ignore());
+            CreateMap<UpdateAccountStudentPwDTO, UserAccount>()
+     .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
+     .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => DateTime.Now))
+     .ForMember(dest => dest.UserName, opt => opt.Ignore())
+     .ForMember(dest => dest.FullName, opt => opt.Ignore())
+     .ForMember(dest => dest.Email, opt => opt.Ignore())
+     .ForMember(dest => dest.Phone, opt => opt.Ignore())
+     .ForMember(dest => dest.RoleId, opt => opt.Ignore())
+     .ForMember(dest => dest.IsActive, opt => opt.Ignore())
+     .ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
+
 
             CreateMap<UpdateAccountAdminDTO, UserAccount>()
            .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => DateTime.UtcNow));

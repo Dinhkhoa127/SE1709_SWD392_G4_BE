@@ -86,40 +86,61 @@ namespace BiologyRecognition.Controllers.Controllers
         }
 
 
-        [HttpPut("student")]
-        public async Task<IActionResult> UpdateAccountByStudent([FromBody] UpdateAccountStudentDTO updateAccountStudent)
+        [HttpPut("student/update-info")]
+        public async Task<IActionResult> UpdateAccountInfo([FromBody] UpdateAccountStudentNoPwDTO dto)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return BadRequest(new { message = errors });
             }
-            updateAccountStudent.Email = updateAccountStudent.Email?.Trim();
-            updateAccountStudent.Phone = updateAccountStudent.Phone?.Trim();
 
-            var user = await _accountService.GetUserAccountByIdAsync(updateAccountStudent.UserAccountId);
+            dto.Email = dto.Email?.Trim();
+            dto.Phone = dto.Phone?.Trim();
+
+            var user = await _accountService.GetUserAccountByIdAsync(dto.UserAccountId);
             if (user == null)
                 return NotFound(new { message = "Không tìm thấy tài khoản" });
 
-            var emailExists = await _accountService.GetUserAccountByNameOrEmailAsync(updateAccountStudent.Email);
-            if (emailExists !=null && emailExists.UserAccountId != updateAccountStudent.UserAccountId)
+            var emailExists = await _accountService.GetUserAccountByNameOrEmailAsync(dto.Email);
+            if (emailExists != null && emailExists.UserAccountId != dto.UserAccountId)
                 return BadRequest(new { message = "Email đã được sử dụng" });
 
-            var phoneExists = await _accountService.GetUserAccountByPhone(updateAccountStudent.Phone.Trim());
-            if (phoneExists != null && phoneExists.UserAccountId != updateAccountStudent.UserAccountId)
-            {
+            var phoneExists = await _accountService.GetUserAccountByPhone(dto.Phone);
+            if (phoneExists != null && phoneExists.UserAccountId != dto.UserAccountId)
                 return BadRequest(new { message = "Số điện thoại đã được sử dụng" });
-            }
 
-
-            _mapper.Map(updateAccountStudent, user);
-
+            _mapper.Map(dto, user);
             var result = await _accountService.UpdateAsync(user);
             if (result > 0)
-                return Ok(new { message = "Cập nhật thành công" });
+                return Ok(new { message = "Cập nhật thông tin thành công" });
 
             return BadRequest(new { message = "Cập nhật thất bại" });
         }
+
+        [HttpPut("student/update-password")]
+        public async Task<IActionResult> UpdateStudentPassword([FromBody] UpdateAccountStudentPwDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new { message = errors });
+            }
+
+            var user = await _accountService.GetUserAccountByIdAsync(dto.UserAccountId);
+            if (user == null)
+                return NotFound(new { message = "Không tìm thấy tài khoản" });
+
+            dto.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            _mapper.Map(dto, user);
+            var result = await _accountService.UpdateAsync(user);
+
+            if (result > 0)
+                return Ok(new { message = "Cập nhật mật khẩu thành công" });
+
+            return BadRequest(new { message = "Cập nhật mật khẩu thất bại" });
+        }
+
 
         [HttpPut("admin")]
         public async Task<IActionResult> UpdateAccountByAdmin([FromBody] UpdateAccountAdminDTO updateAccountAdmin)
@@ -147,7 +168,7 @@ namespace BiologyRecognition.Controllers.Controllers
                 return BadRequest(new { message = "Số điện thoại đã được sử dụng" });
             }
 
-
+            updateAccountAdmin.Password = BCrypt.Net.BCrypt.HashPassword(updateAccountAdmin.Password);
             _mapper.Map(updateAccountAdmin, user);
 
             var result = await _accountService.UpdateAsync(user);

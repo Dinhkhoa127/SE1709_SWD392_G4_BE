@@ -43,7 +43,7 @@ namespace BiologyRecognition.Application
         }
         public async Task<int> UpdateAsync(UserAccount userAccount)
         {
-            userAccount.Password = BCrypt.Net.BCrypt.HashPassword(userAccount.Password);
+           
             return await _repository.UpdateAsync(userAccount);
         }
     }

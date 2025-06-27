@@ -9,6 +9,7 @@ namespace BiologyRecognition.DTOs.Subject
 {
     public class UpdateSubjectDTO
     {
+        [Required(ErrorMessage = "SubjectId là bắt buộc.")]
         public int SubjectId { get; set; }
 
         [Required(ErrorMessage = "Tên Subject không được để trống")]

@@ -74,8 +74,10 @@ namespace BiologyRecognition.Controller.Controllers
         //}
 
         [HttpGet("filter-name")]
-        public async Task<IActionResult> GetSubjectsByContainName([FromQuery] string name)
+        public async Task<IActionResult> GetSubjectsByContainName([FromQuery] string? name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
             var list = await _subjectService.GetListSubjectByContainNameAsync(name);
             if (list == null || list.Count == 0)
                 return NotFound("Không có môn học phù hợp với từ khóa tìm kiếm.");
