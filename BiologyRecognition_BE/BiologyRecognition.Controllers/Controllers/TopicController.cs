@@ -59,7 +59,19 @@ namespace BiologyRecognition.Controller.Controllers
             var dto = _mapper.Map<List<TopicDTO>>(list);
             return Ok(dto);
         }
+        [HttpGet("by-artifactName/{artifactName}")]
+        public async Task<IActionResult> GetTopicsByArtifactName(string artifactName)
+        {
+            if (string.IsNullOrWhiteSpace(artifactName))
+                return BadRequest(new { message = "Tên đối tượng không được để trống." });
 
+            var topics = await _topicService.GetListTopicsByArtifactNameAsync(artifactName);
+            if (topics == null || topics.Count == 0)
+                return NotFound("Không có chủ đề nào phù hợp với tên đối tượng.");
+
+            var dto = _mapper.Map<List<TopicDTO>>(topics);
+            return Ok(dto);
+        }
         [HttpPost]
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {

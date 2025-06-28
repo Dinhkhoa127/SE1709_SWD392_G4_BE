@@ -18,5 +18,6 @@ namespace BiologyRecognition.Application
        
         Task<Article> GetByIdAsync(int id);
         Task<int> CreateWithArtifactsAsync(Article article, List<Artifact> artifacts);
+        Task<List<Article>> GetListArticleByArtifactNameAsync(string name);
     }
 }

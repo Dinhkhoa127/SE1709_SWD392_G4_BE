@@ -50,5 +50,10 @@ namespace BiologyRecognition.Infrastructure
                 .ToListAsync();
         }
 
+        public async Task<List<Topic>> GetListTopicsByArtifactNameAsync(string artifactName)
+        {
+            return await _context.Topics.Include(a => a.ArtifactTypes).ThenInclude(a => a.Artifacts).Where(a => a.ArtifactTypes.Any(a => a.Artifacts.Any(ar => ar.Name.ToLower().Contains(artifactName)))).ToListAsync();
+        }
+
     }
 }

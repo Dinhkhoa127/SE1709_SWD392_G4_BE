@@ -15,6 +15,7 @@ namespace BiologyRecognition.Application
         Task<List<Topic>> GetListTopicsByContainNameAsync(string name);
         Task<Topic> GetByIdAsync(int id);
         Task<List<Topic>> GetListTopicsByChapterIdAsync(int id);
+        Task<List<Topic>> GetListTopicsByArtifactNameAsync(string artifactName);
     }
 }
 

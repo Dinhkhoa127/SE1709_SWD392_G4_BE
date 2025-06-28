@@ -45,5 +45,10 @@ namespace BiologyRecognition.Application
         {
             return _articleRepository.CreateWithArtifactsAsync(article, artifacts);
         }
+
+        public Task<List<Article>> GetListArticleByArtifactNameAsync(string name)
+        {
+            return _articleRepository.GetListArticleByArtifactNameAsync(name);
+        }
     }
 }

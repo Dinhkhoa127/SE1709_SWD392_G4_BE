@@ -55,7 +55,16 @@ namespace BiologyRecognition.Controller.Controllers
             var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
             return Ok(dto);
         }
+        [HttpGet("by-artifactName/{artifactName}")]
+        public async Task<IActionResult> GetArtifactMediaByArtifactName(string artifactName)
+        {
+            var list = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(artifactName);
+            if (list == null || list.Count == 0)
+                return NotFound("Không tìm thấy media cho sinh vật này.");
 
+            var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
+            return Ok(dto);
+        }
         [HttpGet("by-type/{type}")]
         public async Task<IActionResult> GetByType(string type)
         {

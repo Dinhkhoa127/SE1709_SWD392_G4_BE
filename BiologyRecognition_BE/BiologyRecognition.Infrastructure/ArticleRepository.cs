@@ -99,5 +99,11 @@ namespace BiologyRecognition.Infrastructure
             return await _context.Articles.Include(aa => aa.Artifacts).Include(aa => aa.ModifiedByNavigation).Include(aa => aa.CreatedByNavigation)
                .FirstOrDefaultAsync(h => h.ArticleId == id);
         }
+
+        public async Task<List<Article>> GetListArticleByArtifactNameAsync(string name)
+        {
+            return await _context.Articles.Include(aa => aa.Artifacts)
+                .Where(a => a.Artifacts.Any(ar => ar.Name.Contains(name))).ToListAsync();
+        }
     }
 }

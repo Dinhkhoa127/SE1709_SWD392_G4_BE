@@ -37,6 +37,11 @@ namespace BiologyRecognition.Application
             return _repository.GetListArtifactMediaByArtifactIdAsync(id);
         }
 
+        public Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name)
+        {
+            return _repository.GetListArtifactMediaByArtifactNameAsync(name);
+        }
+
         public Task<List<ArtifactMedia>> GetListArtifactMediaByTypeAsync(string type)
         {
             return _repository.GetListArtifactMediaByTypeAsync(type);

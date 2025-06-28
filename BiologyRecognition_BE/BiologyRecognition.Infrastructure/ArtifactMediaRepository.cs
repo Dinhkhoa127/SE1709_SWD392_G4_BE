@@ -45,6 +45,12 @@ namespace BiologyRecognition.Infrastructure
             .ToListAsync();
         }
 
+        public async Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name)
+        {
+            return await _context.ArtifactMedia.Include(c => c.Artifact)
+                .Where(u => u.Artifact.Name.ToLower().Contains(name.ToLower()))
+                .ToListAsync();
+        }
         public async Task<ArtifactMedia> GetByIdAsync(int id)
         {
             return await _context.ArtifactMedia.Include(c => c.Artifact).FirstOrDefaultAsync(h => h.ArtifactMediaId == id);

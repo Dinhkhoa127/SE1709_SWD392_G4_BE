@@ -16,5 +16,6 @@ namespace BiologyRecognition.Application
         Task<List<ArtifactMedia>> GetListArtifactMediaByTypeAsync(string type);
         Task<ArtifactMedia> GetByIdAsync(int id);
         Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactIdAsync(int id);
+        Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name); 
     }
 }
