@@ -56,8 +56,10 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dto);
         }
         [HttpGet("by-artifactName/{artifactName}")]
-        public async Task<IActionResult> GetArtifactMediaByArtifactName(string artifactName)
+        public async Task<IActionResult> GetArtifactMediaByArtifactName(string? artifactName)
         {
+            if (string.IsNullOrWhiteSpace(artifactName))
+                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
             var list = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(artifactName);
             if (list == null || list.Count == 0)
                 return NotFound("Không tìm thấy media cho sinh vật này.");

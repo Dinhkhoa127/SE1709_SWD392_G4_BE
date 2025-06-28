@@ -60,16 +60,23 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dto);
         }
         [HttpGet("by-artifactName/{artifactName}")]
-        public async Task<IActionResult> GetTopicsByArtifactName(string artifactName)
+        public async Task<IActionResult> GetTopicsByArtifactName(string? artifactName)
         {
             if (string.IsNullOrWhiteSpace(artifactName))
                 return BadRequest(new { message = "Tên đối tượng không được để trống." });
 
             var topics = await _topicService.GetListTopicsByArtifactNameAsync(artifactName);
+
             if (topics == null || topics.Count == 0)
                 return NotFound("Không có chủ đề nào phù hợp với tên đối tượng.");
 
-            var dto = _mapper.Map<List<TopicDTO>>(topics);
+            var dto = topics.Select(topic =>
+    _mapper.Map<TopicArtifactChapterDTO>(topic, opt =>
+    {
+        opt.Items["artifactName"] = artifactName.ToLower();
+    })
+).ToList();
+             
             return Ok(dto);
         }
         [HttpPost]

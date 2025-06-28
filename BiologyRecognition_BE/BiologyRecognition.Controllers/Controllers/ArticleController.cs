@@ -85,7 +85,7 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dto);
         }
         [HttpGet("by-artifactName/{artifactName}")]
-        public async Task<IActionResult> GetArticlesByArtifactName(string artifactName)
+        public async Task<IActionResult> GetArticlesByArtifactName(string? artifactName)
         {
             if (string.IsNullOrWhiteSpace(artifactName))
                 return BadRequest("Tên mẫu không được để trống.");

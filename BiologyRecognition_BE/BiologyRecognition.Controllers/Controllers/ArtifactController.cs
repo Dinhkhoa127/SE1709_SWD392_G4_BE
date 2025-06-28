@@ -51,8 +51,8 @@ namespace BiologyRecognition.Controller.Controllers
             var dto = _mapper.Map<ArtifactDTO>(artifact);
             return Ok(dto);
         }
-        [HttpGet("{id}/with-media-article")]
-        public async Task<IActionResult> GetArtifactMediaById(int id)
+        [HttpGet("by-id/{id}/with-media-article")]
+        public async Task<IActionResult> GetMediaArticleById(int id)
         {
             var artifact = await _artifactService.GetByIdAsync(id);
             if (artifact == null)
@@ -64,6 +64,34 @@ namespace BiologyRecognition.Controller.Controllers
             artifactDto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(mediaList);
             artifactDto.ArticleList = _mapper.Map<List<ArticleDTO>>(articleList);
             return Ok(artifactDto);
+        }
+
+        [HttpGet("by-name/{name}/with-media-article")]
+        public async Task<IActionResult> GetMediaArticleByArtifactName(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });   
+            var artifact = await _artifactService.GetArtifactsByContainsNameAsync(name);
+            if (artifact == null || artifact.Count == 0)
+                return NotFound("Không tìm thấy artifact nào.");
+
+            var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(name);
+            var articleList = await _articleService.GetListArticleByArtifactNameAsync(name);
+            var artifactDtos = _mapper.Map<List<ArtifactWithMediaArticleDTO>>(artifact);
+
+            // Gán MediaList và ArticleList vào từng artifact
+            foreach (var dto in artifactDtos)
+            {
+                dto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(
+                    mediaList.Where(m => m.ArtifactId == dto.ArtifactId).ToList());
+
+                dto.ArticleList = _mapper.Map<List<ArticleDTO>>(
+                    articleList.Where(article =>
+                        article.Artifacts.Any(artifact => artifact.ArtifactId == dto.ArtifactId)
+                    ).ToList());
+            }
+
+            return Ok(artifactDtos);
         }
 
         [HttpGet("all-detail")]
