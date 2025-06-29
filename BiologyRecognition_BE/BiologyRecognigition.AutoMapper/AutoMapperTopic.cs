@@ -42,7 +42,7 @@ namespace BiologyRecognigition.AutoMapper
           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now))
           .ForMember(dest => dest.ModifiedBy, opt => opt.MapFrom(src => src.CreatedBy))
           .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => DateTime.Now));
-            CreateMap<UpdateChapterDTO, Topic>()
+            CreateMap<UpdateTopicDTO, Topic>()
                 .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
              .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())

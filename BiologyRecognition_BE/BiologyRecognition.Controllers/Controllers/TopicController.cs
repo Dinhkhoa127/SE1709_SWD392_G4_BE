@@ -105,7 +105,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateTopic([FromBody] UpdateChapterDTO topicDto)
+        public async Task<IActionResult> UpdateTopic([FromBody] UpdateTopicDTO topicDto)
         {
             if (!ModelState.IsValid)
             {
@@ -113,7 +113,7 @@ namespace BiologyRecognition.Controller.Controllers
                 return BadRequest(new { message = errors });
             }
 
-            var chapter = await _chapterService.GetByIdAsync(topicDto.SubjectId);
+            var chapter = await _chapterService.GetByIdAsync(topicDto.ChapterId);
             if (chapter == null)
                 return NotFound(new { message = "Không tìm thấy chương trong hệ thống." });
 
@@ -121,7 +121,7 @@ namespace BiologyRecognition.Controller.Controllers
             if (account == null)
                 return NotFound(new { message = "Không tìm thấy người sửa trong hệ thống." });
 
-            var topic = await _topicService.GetByIdAsync(topicDto.ChapterId);
+            var topic = await _topicService.GetByIdAsync(topicDto.TopicId);
             if (topic == null)
                 return NotFound(new { message = "Không tìm thấy chủ đề." });
 
