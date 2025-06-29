@@ -25,7 +25,7 @@ namespace BiologyRecognition.Infrastructure
         {
             topic.ModifiedByNavigation = null;
             topic.Chapter = null;
-            var existing = await _context.Chapters.FindAsync(topic.TopicId);
+            var existing = await _context.Topics.FindAsync(topic.TopicId);
             if (existing == null) return 0;
 
             _context.Topics.Update(topic);
