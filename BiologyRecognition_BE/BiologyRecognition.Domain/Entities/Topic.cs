@@ -15,7 +15,7 @@ public partial class Topic
 
     public string Description { get; set; }
 
-    public int? CreatedBy { get; set; }
+    public int CreatedBy { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
@@ -23,7 +23,7 @@ public partial class Topic
 
     public DateTime? ModifiedDate { get; set; }
 
-    public virtual ICollection<Artifact> Artifacts { get; set; } = new List<Artifact>();
+    public virtual ICollection<ArtifactType> ArtifactTypes { get; set; } = new List<ArtifactType>();
 
     public virtual Chapter Chapter { get; set; }
 

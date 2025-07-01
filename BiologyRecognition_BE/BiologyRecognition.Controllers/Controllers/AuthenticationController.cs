@@ -1,12 +1,12 @@
-﻿using BiologyRecognition.Application;
-using BiologyRecognition.DTOs.UserAccount;
-using BiologyAuthService = BiologyRecognition.Application.IAuthenticationService;
+﻿using BiologyRecognition.DTOs.UserAccount;
+using BiologyAuthService = BiologyRecognition.Application.Interface.IAuthenticationService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using BiologyRecognition.Application.Interface;
 
 namespace BiologyRecognition.Controller.Controllers
 {
@@ -15,10 +15,11 @@ namespace BiologyRecognition.Controller.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly BiologyAuthService _authenticationService;
-
-        public AuthenticationController(BiologyAuthService authenticationService)
+        private readonly IEmailService _emailService;
+        public AuthenticationController(BiologyAuthService authenticationService, IEmailService emailService)
         {
             _authenticationService = authenticationService;
+            _emailService = emailService;
         }
 
         [HttpPost("login")]
@@ -51,6 +52,7 @@ namespace BiologyRecognition.Controller.Controllers
             try
             {
                 var account = await _authenticationService.Register(registerDTO);
+                await _emailService.SendAccountRegisterEmailAsync(registerDTO.UserName, registerDTO.Email,registerDTO.FullName,DateTime.Now);
                 return Ok(account);
             }
             catch (Exception ex)

@@ -6,7 +6,7 @@
    "IncludeConnectionString": true,
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Models",
+   "OutputPath": "Model",
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "BiologyRecognition.Domain",
    "Schemas": null,
@@ -27,7 +27,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[ArtifactImage]",
+         "Name": "[dbo].[ArtifactMedia]",
          "ObjectType": 0
       },
       {

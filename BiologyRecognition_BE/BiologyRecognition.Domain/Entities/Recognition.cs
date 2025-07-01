@@ -11,7 +11,7 @@ public partial class Recognition
 
     public int? ArtifactId { get; set; }
 
-    public int? UserId { get; set; }
+    public int UserId { get; set; }
 
     public string ImageUrl { get; set; }
 

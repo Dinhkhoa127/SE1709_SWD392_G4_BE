@@ -1,8 +1,13 @@
-﻿using BiologyRecognition.Application;
+﻿using BiologyRecognigition.AutoMapper;
+using BiologyRecognition.Application.Implement;
+using BiologyRecognition.Application.Interface;
 using BiologyRecognition.AutoMapper;
+using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -113,14 +118,32 @@ builder.Services.AddAuthentication(options =>
     options.CallbackPath = "/google/callback";
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 });
-
+builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
+builder.Services.AddScoped<IChapterService, ChapterService>();
+builder.Services.AddScoped<IRecognitionService, RecognitionService>();
+builder.Services.AddScoped<ITopicService, TopicService>();
+builder.Services.AddScoped<IArtifactTypeService, ArtifactTypeService>();
+builder.Services.AddScoped<IArtifactService , ArtifactService>();
+builder.Services.AddScoped<IArtifactMediaService, ArtifactMediaService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
-
-
+builder.Services.AddAutoMapper(typeof(AutoMapperSubject));
+builder.Services.AddAutoMapper(typeof(AutoMapperChapter));
+builder.Services.AddAutoMapper(typeof(EmailToUsernameResolver));
+builder.Services.AddAutoMapper(typeof(AutoMapperTopic));
+builder.Services.AddAutoMapper(typeof(AutoMapperArtifactType));
+builder.Services.AddAutoMapper(typeof(AutoMapperArtifact));
+builder.Services.AddAutoMapper(typeof(AutoMapperArtifactMedia));
+builder.Services.AddAutoMapper(typeof(AutoMapperArticle));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddCors(options =>
 
 {
