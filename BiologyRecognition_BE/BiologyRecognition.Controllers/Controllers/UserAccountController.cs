@@ -21,15 +21,15 @@ namespace BiologyRecognition.Controllers.Controllers
         private readonly IEmailService _emailService;
 
 
-        public UserAccountController( IUserAccountService userAccountService, IMapper mapper, IEmailService emailService)
+        public UserAccountController(IUserAccountService userAccountService, IMapper mapper, IEmailService emailService)
         {
-           
+
             _accountService = userAccountService;
             _mapper = mapper;
             _emailService = emailService;
         }
 
-      
+
         [HttpGet]
         //[Authorize]
         public async Task<IActionResult> GetAllAccountInfo()
@@ -39,7 +39,7 @@ namespace BiologyRecognition.Controllers.Controllers
             {
                 return NotFound("Không tìm thấy tài khoản nào.");
             }
-            var dto = _mapper.Map<List<UserAccountDTO >>(accounts);
+            var dto = _mapper.Map<List<UserAccountDTO>>(accounts);
             return Ok(dto);
         }
 
@@ -48,7 +48,7 @@ namespace BiologyRecognition.Controllers.Controllers
         {
             var account = await _accountService.GetUserAccountByIdAsync(id);
             if (account == null)
-                return NotFound ("Tài khoản không tồn tại." );
+                return NotFound("Tài khoản không tồn tại.");
 
             var dto = _mapper.Map<UserAccountDTO>(account);
             return Ok(dto);
@@ -84,7 +84,7 @@ namespace BiologyRecognition.Controllers.Controllers
             var result = await _accountService.CreateAccountByAdminAsync(userAccount);
             if (result > 0)
             {
-                await _emailService.SendAccountCreationEmailAsync(userAccount.UserName,userAccount.Email,"123@");
+                await _emailService.SendAccountCreationEmailAsync(userAccount.UserName, userAccount.Email, "123@");
                 return Ok(new { message = "Tạo tài khoản thành công" });
             }
 
@@ -184,8 +184,8 @@ namespace BiologyRecognition.Controllers.Controllers
             return BadRequest(new { message = "Cập nhật thất bại" });
         }
 
-        [HttpPost("send-otp")]
-        public async Task<IActionResult> SendOtp([FromBody] string? email)
+        [HttpPost("send-otp/{email}")]
+        public async Task<IActionResult> SendOtp(string? email)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return BadRequest(new { message = "Email không được để trống." });
