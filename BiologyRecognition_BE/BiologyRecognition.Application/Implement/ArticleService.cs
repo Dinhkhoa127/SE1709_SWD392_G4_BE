@@ -1,4 +1,5 @@
-﻿using BiologyRecognition.Domain.Entities;
+﻿using BiologyRecognition.Application.Interface;
+using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.Article;
 using BiologyRecognition.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -8,12 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Implement
 {
     public class ArticleService : IArticleService
     {
         private readonly ArticleRepository _articleRepository;
-        public ArticleService() {
+        public ArticleService()
+        {
             _articleRepository = new ArticleRepository();
         }
         public Task<int> UpdateWithArtifactsAsync(UpdateArticleDTO dto, List<Artifact> newArtifacts)
@@ -29,7 +31,7 @@ namespace BiologyRecognition.Application
 
         public Task<List<Article>> GetArticlesByArtifactIdAsync(int artifactId)
         {
-           return _articleRepository.GetArticlesByArtifactIdAsync(artifactId);
+            return _articleRepository.GetArticlesByArtifactIdAsync(artifactId);
         }
 
         public Task<Article> GetByIdAsync(int id)
@@ -39,9 +41,9 @@ namespace BiologyRecognition.Application
 
         public Task<int> UpdateAsync(Article article)
         {
-            return (_articleRepository.UpdateAsync(article));
+            return _articleRepository.UpdateAsync(article);
         }
-        public  Task<int> CreateWithArtifactsAsync(Article article, List<Artifact> artifacts)
+        public Task<int> CreateWithArtifactsAsync(Article article, List<Artifact> artifacts)
         {
             return _articleRepository.CreateWithArtifactsAsync(article, artifacts);
         }

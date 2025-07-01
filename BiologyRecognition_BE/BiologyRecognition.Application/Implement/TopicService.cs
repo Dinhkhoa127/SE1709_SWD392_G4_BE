@@ -1,4 +1,5 @@
-﻿using BiologyRecognition.Domain.Entities;
+﻿using BiologyRecognition.Application.Interface;
+using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Implement
 {
     public class TopicService : ITopicService
     {
@@ -26,7 +27,7 @@ namespace BiologyRecognition.Application
         public Task<Topic> GetByIdAsync(int id)
         {
             return _repository.GetByIdAsync(id);
-         }
+        }
 
         public Task<List<Topic>> GetListTopicsByContainNameAsync(string name)
         {

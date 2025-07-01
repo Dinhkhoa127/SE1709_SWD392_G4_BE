@@ -1,4 +1,5 @@
-﻿using BiologyRecognition.Domain.Entities;
+﻿using BiologyRecognition.Application.Interface;
+using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Implement
 {
     public class RecognitionService : IRecognitionService
     {

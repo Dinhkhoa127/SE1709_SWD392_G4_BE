@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BiologyRecognition.Application;
+using BiologyRecognition.Application.Interface;
 using BiologyRecognition.DTOs.Chapter;
 using BiologyRecognition.DTOs.Recognition;
 using Microsoft.AspNetCore.Mvc;

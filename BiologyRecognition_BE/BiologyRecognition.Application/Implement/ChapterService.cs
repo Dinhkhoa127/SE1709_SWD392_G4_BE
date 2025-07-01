@@ -1,4 +1,5 @@
-﻿using BiologyRecognition.Domain.Entities;
+﻿using BiologyRecognition.Application.Interface;
+using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Implement
 {
     public class ChapterService : IChapterService
     {
@@ -43,7 +44,7 @@ namespace BiologyRecognition.Application
         {
             return _repository.UpdateAsync(chapter);
         }
-        public  Task<List<Chapter>> GetListChaptersBySubjectIdAsync(int id)
+        public Task<List<Chapter>> GetListChaptersBySubjectIdAsync(int id)
         {
             return _repository.GetListChaptersBySubjectIdAsync(id);
         }

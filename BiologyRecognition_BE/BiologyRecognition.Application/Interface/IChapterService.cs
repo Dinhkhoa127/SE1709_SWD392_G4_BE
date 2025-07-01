@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Interface
 {
     public interface IChapterService
     {
-  
+
 
         Task<int> CreateAsync(Chapter chapter);
         Task<int> UpdateAsync(Chapter chapter);

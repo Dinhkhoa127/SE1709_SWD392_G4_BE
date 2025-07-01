@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Interface
 {
     public interface IArtifactMediaService
     {
@@ -16,6 +16,6 @@ namespace BiologyRecognition.Application
         Task<List<ArtifactMedia>> GetListArtifactMediaByTypeAsync(string type);
         Task<ArtifactMedia> GetByIdAsync(int id);
         Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactIdAsync(int id);
-        Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name); 
+        Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name);
     }
 }

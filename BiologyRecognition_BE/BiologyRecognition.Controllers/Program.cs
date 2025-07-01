@@ -1,10 +1,13 @@
 ﻿using BiologyRecognigition.AutoMapper;
-using BiologyRecognition.Application;
+using BiologyRecognition.Application.Implement;
+using BiologyRecognition.Application.Interface;
 using BiologyRecognition.AutoMapper;
 using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -128,6 +131,8 @@ builder.Services.AddScoped<IArtifactTypeService, ArtifactTypeService>();
 builder.Services.AddScoped<IArtifactService , ArtifactService>();
 builder.Services.AddScoped<IArtifactMediaService, ArtifactMediaService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
 builder.Services.AddAutoMapper(typeof(AutoMapperSubject));
 builder.Services.AddAutoMapper(typeof(AutoMapperChapter));
@@ -137,6 +142,8 @@ builder.Services.AddAutoMapper(typeof(AutoMapperArtifactType));
 builder.Services.AddAutoMapper(typeof(AutoMapperArtifact));
 builder.Services.AddAutoMapper(typeof(AutoMapperArtifactMedia));
 builder.Services.AddAutoMapper(typeof(AutoMapperArticle));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddCors(options =>
 
 {

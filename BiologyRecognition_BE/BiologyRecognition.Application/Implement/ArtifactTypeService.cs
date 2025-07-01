@@ -1,4 +1,5 @@
-﻿using BiologyRecognition.Domain.DBContext;
+﻿using BiologyRecognition.Application.Interface;
+using BiologyRecognition.Domain.DBContext;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.Infrastructure;
 using System;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Implement
 {
     public class ArtifactTypeService : IArtifactTypeService
     {
@@ -40,7 +41,7 @@ namespace BiologyRecognition.Application
 
         public Task<int> UpdateAsync(ArtifactType artifactType)
         {
-            return _repository.UpdateAsync(artifactType);   
+            return _repository.UpdateAsync(artifactType);
         }
     }
 }

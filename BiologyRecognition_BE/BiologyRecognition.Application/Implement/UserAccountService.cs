@@ -1,4 +1,5 @@
-﻿using BiologyRecognition.Domain.Entities;
+﻿using BiologyRecognition.Application.Interface;
+using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.UserAccount;
 using BiologyRecognition.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Implement
 {
     public class UserAccountService : IUserAccountService
     {
@@ -18,7 +19,7 @@ namespace BiologyRecognition.Application
 
         public async Task<List<UserAccount>> GetAllAsync()
         {
-           return await _repository.GetAllAsync();
+            return await _repository.GetAllAsync();
         }
         public async Task<UserAccount> GetUserAccountByIdAsync(int id)
         {
@@ -43,7 +44,7 @@ namespace BiologyRecognition.Application
         }
         public async Task<int> UpdateAsync(UserAccount userAccount)
         {
-           
+
             return await _repository.UpdateAsync(userAccount);
         }
     }

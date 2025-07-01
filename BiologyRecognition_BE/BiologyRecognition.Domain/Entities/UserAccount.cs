@@ -27,6 +27,10 @@ public partial class UserAccount
 
     public bool IsActive { get; set; }
 
+    public string OtpCode { get; set; }
+
+    public DateTime? OtpExpiry { get; set; }
+
     public virtual ICollection<Article> ArticleCreatedByNavigations { get; set; } = new List<Article>();
 
     public virtual ICollection<Article> ArticleModifiedByNavigations { get; set; } = new List<Article>();

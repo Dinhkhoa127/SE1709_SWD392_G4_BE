@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiologyRecognition.Application
+namespace BiologyRecognition.Application.Interface
 {
     public interface IRecognitionService
     {
@@ -15,6 +15,6 @@ namespace BiologyRecognition.Application
 
         Task<Recognition> GetByIdAsync(int id);
         Task<List<Recognition>> GetRecognitionUserByIdAsync(int userId);
-       
+
     }
 }

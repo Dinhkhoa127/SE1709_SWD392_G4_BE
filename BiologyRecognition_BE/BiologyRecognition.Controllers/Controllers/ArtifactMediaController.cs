@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BiologyRecognition.Application;
+using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.ArtifactMedia;
 using Microsoft.AspNetCore.Http;
