@@ -148,7 +148,7 @@ builder.Services.AddCors(options =>
 
 {
     options.AddPolicy("AllowReactApp",
-        builder => builder.WithOrigins("http://localhost:5173")
+        builder => builder.WithOrigins("http://localhost:5173", "https://se-1709-swd-392-g4-fe.vercel.app")
                           .AllowAnyMethod()
                           .AllowCredentials() // Cho phép cookie
                           .AllowAnyHeader());
