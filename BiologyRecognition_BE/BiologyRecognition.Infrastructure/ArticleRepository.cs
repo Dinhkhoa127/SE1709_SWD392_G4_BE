@@ -28,7 +28,7 @@ namespace BiologyRecognition.Infrastructure
             article.Artifacts = null;
             article.CreatedByNavigation = null;
             article.ModifiedByNavigation = null;
-            var existing = await _context.Chapters.FindAsync(article.ArticleId);
+            var existing = await _context.Articles.FindAsync(article.ArticleId);
             if (existing == null) return 0;
 
             _context.Articles.Update(article);

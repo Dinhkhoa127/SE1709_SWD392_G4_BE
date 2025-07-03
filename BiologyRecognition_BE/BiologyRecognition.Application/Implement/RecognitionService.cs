@@ -13,6 +13,12 @@ namespace BiologyRecognition.Application.Implement
     {
         private readonly RecognitionRepository _repository;
         public RecognitionService() => _repository ??= new RecognitionRepository();
+
+        public Task<int> CreatAsync(Recognition recognition)
+        {
+            return _repository.CreateAsync(recognition);
+        }
+
         public Task<List<Recognition>> GetAllAsync()
         {
             return _repository.GetAllAsync();

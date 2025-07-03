@@ -24,7 +24,7 @@ namespace BiologyRecognition.Infrastructure
         {
 
             artifactType.Topic = null;
-            var existing = await _context.Chapters.FindAsync(artifactType.TopicId);
+            var existing = await _context.ArtifactTypes.FindAsync(artifactType.TopicId);
             if (existing == null) return 0;
 
             _context.ArtifactTypes.Update(artifactType);

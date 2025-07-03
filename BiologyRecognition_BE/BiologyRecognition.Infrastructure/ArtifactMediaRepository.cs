@@ -26,7 +26,7 @@ namespace BiologyRecognition.Infrastructure
         {
             artifactMedia.Artifact = null;
            
-            var existing = await _context.Chapters.FindAsync(artifactMedia.ArtifactMediaId);
+            var existing = await _context.ArtifactMedia.FindAsync(artifactMedia.ArtifactMediaId);
             if (existing == null) return 0;
 
             _context.ArtifactMedia.Update(artifactMedia);

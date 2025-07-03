@@ -15,6 +15,7 @@ namespace BiologyRecognition.Application.Interface
 
         Task<Recognition> GetByIdAsync(int id);
         Task<List<Recognition>> GetRecognitionUserByIdAsync(int userId);
+        Task<int> CreatAsync (Recognition recognition);
 
     }
 }
