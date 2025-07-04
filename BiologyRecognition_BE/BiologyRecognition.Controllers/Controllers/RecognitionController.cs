@@ -131,7 +131,7 @@ namespace BiologyRecognition.Controller.Controllers
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                     );
 
-                if (aiResult.Confidence < 0.7)
+                if (aiResult.Confidence < 0.5)
                 {
                     var recogFailed = new Recognition();
                     recogFailed.UserId = imageDTO.UserId;
@@ -141,7 +141,7 @@ namespace BiologyRecognition.Controller.Controllers
                     recogFailed.RecognizedAt = DateTime.Now;
                     recogFailed.ConfidenceScore = aiResult.Confidence;
                     recogFailed.AiResult = "Không nhận dạng được chính xác";
-                    recogFailed.Status = "Failed";
+                    recogFailed.Status = "FAILED";
                     await _recognitionService.CreatAsync(recogFailed);
                     return BadRequest(new { success = false, message = "Không nhận dạng được." });
                 }
@@ -163,8 +163,8 @@ namespace BiologyRecognition.Controller.Controllers
                         RecognizedAt = DateTime.Now,
                         ConfidenceScore = aiResult.Confidence,
                         AiResult = aiResult.ArtifactName,
-                        Status = "Success"
-                    };
+                        Status = "COMPLETED"
+					};
                     var result = await _recognitionService.CreatAsync(recogSuccess);
                     message = result > 0 ? "Lưu thành công recognition" : "Lưu recognition thất bại";
                 }
@@ -173,7 +173,7 @@ namespace BiologyRecognition.Controller.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Đã xảy ra lỗi trong quá trình nhận diện.", error = ex.Message });
+                return BadRequest(new { message = "Đã xảy ra lỗi trong quá trình nhận diện.", error = ex.Message, inner = ex.InnerException?.Message });
             }
         }
     }
