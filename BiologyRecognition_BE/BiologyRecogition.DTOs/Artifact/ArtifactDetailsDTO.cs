@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BiologyRecognition.DTOs.Artifact
 {
-    public class ArtifaceDetailsDTO
+    public class ArtifactDetailsDTO
     {
         public int ArtifactId { get; set; }
         public string ArtifactName { get; set; }

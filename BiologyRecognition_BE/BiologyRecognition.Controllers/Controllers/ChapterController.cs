@@ -26,7 +26,7 @@ namespace BiologyRecognition.Controller.Controllers
             _chapterService = chapterService;
         }
 
-        [HttpGet]
+        [HttpGet(".")]
         public async Task<IActionResult> GetAllChapters()
         {
             var chapters = await _chapterService.GetAllAsync();
@@ -48,16 +48,7 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dto);
         }
 
-        //[HttpGet("search")]
-        //public async Task<IActionResult> GetChapterByName([FromQuery] string name)
-        //{
-        //    var chapter = await _chapterService.GetChapterByNameAsync(name);
-        //    if (chapter == null)
-        //        return NotFound("Không tìm thấy bài với tên đã nhập.");
-
-        //    var dto = _mapper.Map<ChapterDTO>(chapter);
-        //    return Ok(dto);
-        //}
+       
 
         [HttpGet("filter-name")]
         public async Task<IActionResult> GetChaptersByContainName([FromQuery] string? name)
@@ -72,6 +63,17 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dto);
         }
 
+        [HttpGet("by-subject/{subjectId}")]
+        public async Task<IActionResult> GetTopicsByChapterId(int subjectId)
+        {
+            var chapters = await _chapterService.GetListChaptersBySubjectIdAsync(subjectId);
+
+            if (chapters == null || chapters.Count == 0)
+                return NotFound("Không có bài nào trong chương này.");
+
+            var dto = _mapper.Map<List<ChapterDTO>>(chapters);
+            return Ok(dto);
+        }
         [HttpPost]
         public async Task<IActionResult> CreateChapter([FromBody] CreateChapterDTO chapterDto)
         {
@@ -122,16 +124,49 @@ namespace BiologyRecognition.Controller.Controllers
 
             return BadRequest(new { message = "Cập nhật bài thất bại." });
         }
-        [HttpGet("by-subject/{subjectId}")]
-        public async Task<IActionResult> GetTopicsByChapterId(int subjectId)
+
+        [HttpGet]
+        public async Task<IActionResult> GetChapters(
+    [FromQuery] int? id,
+    [FromQuery] string? name,
+    [FromQuery] int? subjectId)
         {
-            var chapters = await _chapterService.GetListChaptersBySubjectIdAsync(subjectId);
+            if (id.HasValue)
+            {
+                var chapter = await _chapterService.GetByIdAsync(id.Value);
+                if (chapter == null)
+                    return NotFound("Bài không tồn tại.");
 
-            if (chapters == null || chapters.Count == 0)
-                return NotFound("Không có bài nào trong chương này.");
+                var dto = _mapper.Map<ChapterDTO>(chapter);
+                return Ok(dto);
+            }
 
-            var dto = _mapper.Map<List<ChapterDTO>>(chapters);
-            return Ok(dto);
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var listByName = await _chapterService.GetListChaptersByContainNameAsync(name);
+                if (listByName == null || listByName.Count == 0)
+                    return NotFound("Không có bài phù hợp với từ khóa tìm kiếm.");
+
+                var dtoByName = _mapper.Map<List<ChapterDTO>>(listByName);
+                return Ok(dtoByName);
+            }
+
+            if (subjectId.HasValue)
+            {
+                var listBySubject = await _chapterService.GetListChaptersBySubjectIdAsync(subjectId.Value);
+                if (listBySubject == null || listBySubject.Count == 0)
+                    return NotFound("Không có bài nào trong chương này.");
+
+                var dtoBySubject = _mapper.Map<List<ChapterDTO>>(listBySubject);
+                return Ok(dtoBySubject);
+            }
+
+            var all = await _chapterService.GetAllAsync();
+            if (all == null || all.Count == 0)
+                return NotFound("Không tìm thấy bài nào.");
+
+            var dtoAll = _mapper.Map<List<ChapterDTO>>(all);
+            return Ok(dtoAll);
         }
 
     }

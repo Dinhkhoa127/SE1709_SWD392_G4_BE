@@ -25,7 +25,7 @@ namespace BiologyRecognition.Controller.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet(".")]
         public async Task<IActionResult> GetAllTopics()
         {
             var topics = await _topicService.GetAllAsync();
@@ -79,6 +79,19 @@ namespace BiologyRecognition.Controller.Controllers
              
             return Ok(dto);
         }
+
+        [HttpGet("by-chapter/{chapterId}")]
+        public async Task<IActionResult> GetTopicsByChapterId(int chapterId)
+        {
+            var topics = await _topicService.GetListTopicsByChapterIdAsync(chapterId);
+
+            if (topics == null || topics.Count == 0)
+                return NotFound("Không có nội dung nào trong bài này.");
+
+            var dto = _mapper.Map<List<TopicDTO>>(topics);
+            return Ok(dto);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
@@ -132,16 +145,72 @@ namespace BiologyRecognition.Controller.Controllers
 
             return BadRequest(new { message = "Cập nhật chủ đề thất bại." });
         }
-        [HttpGet("by-chapter/{chapterId}")]
-        public async Task<IActionResult> GetTopicsByChapterId(int chapterId)
+
+        [HttpGet]
+        public async Task<IActionResult> GetTopics(
+    [FromQuery] int? id,
+    [FromQuery] string? name,
+    [FromQuery] string? artifactName,
+    [FromQuery] int? chapterId
+)
         {
-            var topics = await _topicService.GetListTopicsByChapterIdAsync(chapterId);
+            // 1. Nếu có ID -> Lấy theo ID
+            if (id.HasValue)
+            {
+                var topic = await _topicService.GetByIdAsync(id.Value);
+                if (topic == null)
+                    return NotFound("Chủ đề không tồn tại.");
 
-            if (topics == null || topics.Count == 0)
-                return NotFound("Không có nội dung nào trong bài này.");
+                var dto = _mapper.Map<TopicDTO>(topic);
+                return Ok(dto);
+            }
 
-            var dto = _mapper.Map<List<TopicDTO>>(topics);
-            return Ok(dto);
+            // 2. Nếu có artifactName -> Lấy theo artifact
+            if (!string.IsNullOrWhiteSpace(artifactName))
+            {
+                var topics = await _topicService.GetListTopicsByArtifactNameAsync(artifactName);
+                if (topics == null || topics.Count == 0)
+                    return NotFound("Không có chủ đề nào phù hợp với tên đối tượng.");
+
+                var dto = topics.Select(topic =>
+                    _mapper.Map<TopicArtifactChapterDTO>(topic, opt =>
+                    {
+                        opt.Items["artifactName"] = artifactName.ToLower();
+                    })
+                ).ToList();
+
+                return Ok(dto);
+            }
+
+            // 3. Nếu có chapterId -> Lấy theo chương
+            if (chapterId.HasValue)
+            {
+                var topics = await _topicService.GetListTopicsByChapterIdAsync(chapterId.Value);
+                if (topics == null || topics.Count == 0)
+                    return NotFound("Không có nội dung nào trong bài này.");
+
+                var dto = _mapper.Map<List<TopicDTO>>(topics);
+                return Ok(dto);
+            }
+
+            // 4. Nếu có name -> Tìm kiếm theo tên
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var list = await _topicService.GetListTopicsByContainNameAsync(name);
+                if (list == null || list.Count == 0)
+                    return NotFound("Không có chủ đề phù hợp với từ khóa tìm kiếm.");
+
+                var dto = _mapper.Map<List<TopicDTO>>(list);
+                return Ok(dto);
+            }
+
+            // 5. Nếu không có gì -> Trả toàn bộ
+            var allTopics = await _topicService.GetAllAsync();
+            if (allTopics == null || allTopics.Count == 0)
+                return NotFound("Không tìm thấy chủ đề nào.");
+
+            var allDto = _mapper.Map<List<TopicDTO>>(allTopics);
+            return Ok(allDto);
         }
 
     }

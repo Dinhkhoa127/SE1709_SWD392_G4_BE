@@ -31,30 +31,28 @@ namespace BiologyRecognition.Controllers.Controllers
 
 
         [HttpGet]
-        //[Authorize]
-        public async Task<IActionResult> GetAllAccountInfo()
+        public async Task<IActionResult> GetAccounts([FromQuery] int? id)
         {
-            var accounts = await _accountService.GetAllAsync();
-            if (accounts == null)
+            if (id.HasValue)
             {
-                return NotFound("Không tìm thấy tài khoản nào.");
+                var account = await _accountService.GetUserAccountByIdAsync(id.Value);
+                if (account == null)
+                    return NotFound("Tài khoản không tồn tại.");
+
+                var dto = _mapper.Map<UserAccountDTO>(account);
+                return Ok(dto);
             }
-            var dto = _mapper.Map<List<UserAccountDTO>>(accounts);
-            return Ok(dto);
-        }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
-        {
-            var account = await _accountService.GetUserAccountByIdAsync(id);
-            if (account == null)
-                return NotFound("Tài khoản không tồn tại.");
+            var accounts = await _accountService.GetAllAsync();
+            if (accounts == null || accounts.Count == 0)
+                return NotFound("Không tìm thấy tài khoản nào.");
 
-            var dto = _mapper.Map<UserAccountDTO>(account);
-            return Ok(dto);
+            var dtoList = _mapper.Map<List<UserAccountDTO>>(accounts);
+            return Ok(dtoList);
         }
 
         [HttpPost("admin")]
+
         public async Task<IActionResult> CreateAccountByAdmin([FromBody] CreateAccountDTO createAccountDto)
         {
             if (!ModelState.IsValid)
@@ -93,6 +91,8 @@ namespace BiologyRecognition.Controllers.Controllers
 
 
         [HttpPut("student/update-info")]
+        [Authorize]
+
         public async Task<IActionResult> UpdateAccountInfo([FromBody] UpdateAccountStudentNoPwDTO dto)
         {
             if (!ModelState.IsValid)
@@ -125,6 +125,8 @@ namespace BiologyRecognition.Controllers.Controllers
         }
 
         [HttpPut("student/update-password")]
+        [Authorize]
+
         public async Task<IActionResult> UpdateStudentPassword([FromBody] UpdateAccountStudentPwDTO dto)
         {
             if (!ModelState.IsValid)
@@ -149,6 +151,8 @@ namespace BiologyRecognition.Controllers.Controllers
 
 
         [HttpPut("admin")]
+        [Authorize]
+
         public async Task<IActionResult> UpdateAccountByAdmin([FromBody] UpdateAccountAdminDTO updateAccountAdmin)
         {
             if (!ModelState.IsValid)

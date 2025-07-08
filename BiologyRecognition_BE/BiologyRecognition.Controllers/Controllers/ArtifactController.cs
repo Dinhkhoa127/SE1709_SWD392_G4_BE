@@ -30,7 +30,7 @@ namespace BiologyRecognition.Controller.Controllers
             _artifactMediaService = artifactMediaService;
             _articleService = articleService;
         }
-        [HttpGet]
+        [HttpGet(".")]
         public async Task<IActionResult> GetAllArtifacts()
         {
             var artifacts = await _artifactService.GetAllAsync();
@@ -101,7 +101,7 @@ namespace BiologyRecognition.Controller.Controllers
             if (artifacts == null || artifacts.Count == 0)
                 return NotFound("Không tìm thấy artifact nào.");
 
-            var dto = _mapper.Map<List<ArtifaceDetailsDTO>>(artifacts);
+            var dto = _mapper.Map<List<ArtifactDetailsDTO>>(artifacts);
             return Ok(dto);
         }
 
@@ -112,7 +112,7 @@ namespace BiologyRecognition.Controller.Controllers
             if (artifact == null)
                 return NotFound("Artifact không tồn tại.");
 
-            var dto = _mapper.Map<ArtifaceDetailsDTO>(artifact);
+            var dto = _mapper.Map<ArtifactDetailsDTO>(artifact);
             return Ok(dto);
         }
 
@@ -195,6 +195,111 @@ namespace BiologyRecognition.Controller.Controllers
 
             return BadRequest(new { message = "Cập nhật Artifact thất bại." });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetArtifacts(
+    [FromQuery] int? id,
+    [FromQuery] string? name,
+    [FromQuery] int? artifactTypeId,
+    [FromQuery] bool includeDetails = false,
+    [FromQuery] bool includeMediaAndArticles = false)
+        {
+            // 1. Lấy theo ID (có thể gộp chi tiết)
+            if (id.HasValue)
+            {
+                var artifact = await _artifactService.GetByIdAsync(id.Value);
+                if (artifact == null)
+                    return NotFound("Artifact không tồn tại.");
+
+                if (includeMediaAndArticles)
+                {
+                    var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(id.Value);
+                    var articleList = await _articleService.GetArticlesByArtifactIdAsync(id.Value);
+                    var artifactDto = _mapper.Map<ArtifactWithMediaArticleDTO>(artifact);
+                    artifactDto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(mediaList);
+                    artifactDto.ArticleList = _mapper.Map<List<ArticleDTO>>(articleList);
+                    return Ok(artifactDto);
+                }
+
+                if (includeDetails)
+                {
+                    var dto = _mapper.Map<ArtifactDetailsDTO>(artifact);
+                    return Ok(dto);
+                }
+                else
+                {
+                    var dto = _mapper.Map<ArtifactDTO>(artifact);
+                    return Ok(dto);
+                }
+            }
+
+            // 2. Lọc theo tên
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var list = await _artifactService.GetArtifactsByContainsNameAsync(name);
+                if (list == null || list.Count == 0)
+                    return NotFound("Không có Artifact phù hợp với từ khóa tìm kiếm.");
+
+                if (includeMediaAndArticles)
+                {
+                    var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(name);
+                    var articleList = await _articleService.GetListArticleByArtifactNameAsync(name);
+                    var artifactDtos = _mapper.Map<List<ArtifactWithMediaArticleDTO>>(list);
+
+                    foreach (var dto in artifactDtos)
+                    {
+                        dto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(
+                            mediaList.Where(m => m.ArtifactId == dto.ArtifactId).ToList());
+
+                        dto.ArticleList = _mapper.Map<List<ArticleDTO>>(
+                            articleList.Where(article =>
+                                article.Artifacts.Any(artifact => artifact.ArtifactId == dto.ArtifactId)
+                            ).ToList());
+                    }
+
+                    return Ok(artifactDtos);
+                }
+
+                if (includeDetails)
+                {
+                    var dto = _mapper.Map<List<ArtifactDetailsDTO>>(list);
+                    return Ok(dto);
+                }
+                else
+                {
+                    var dto = _mapper.Map<List<ArtifactDTO>>(list);
+                    return Ok(dto);
+                }
+            }
+
+            // 3. Lọc theo artifactTypeId
+            if (artifactTypeId.HasValue)
+            {
+                var artifacts = await _artifactService.GetListArtifactsByArtifactTypeIdAsync(artifactTypeId.Value);
+                if (artifacts == null || artifacts.Count == 0)
+                    return NotFound("Không có Artifact nào thuộc loại này.");
+
+                var dto = _mapper.Map<List<ArtifactDTO>>(artifacts);
+                return Ok(dto);
+            }
+
+            // 4. Lấy tất cả (có thể kèm chi tiết)
+            var all = await _artifactService.GetAllAsync();
+            if (all == null || all.Count == 0)
+                return NotFound("Không tìm thấy artifact nào.");
+
+            if (includeDetails)
+            {
+                var dto = _mapper.Map<List<ArtifactDetailsDTO>>(all);
+                return Ok(dto);
+            }
+            else
+            {
+                var dto = _mapper.Map<List<ArtifactDTO>>(all);
+                return Ok(dto);
+            }
+        }
+
     }
 
 }

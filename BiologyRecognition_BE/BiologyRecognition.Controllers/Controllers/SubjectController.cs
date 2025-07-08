@@ -24,7 +24,7 @@ namespace BiologyRecognition.Controller.Controllers
             _subjectService = subjectService;
         }
 
-        [HttpGet]
+        [HttpGet(".")]
         public async Task<IActionResult> GetAllSubjects()
         {
             var subjects = await _subjectService.GetAllAsync();
@@ -47,32 +47,7 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dto);
         }
 
-        //[HttpGet("search")]
-        //public async Task<IActionResult> GetSubjectByName([FromQuery] string name)
-        //{
-        //    var subject = await _subjectService.GetSubjectByNameAsync(name);
-        //    if (subject == null)
-        //        return NotFound("Không tìm thấy môn học với tên đã nhập.");
-
-        //    var dto = _mapper.Map<SubjectDTO>(subject);
-        //    return Ok(dto);
-        //}
-        //[HttpDelete("admin/{subjectId}")]
-        //public async Task<IActionResult> DeleteSubjectByAdmin(int subjectId)
-        //{
-        //    // Kiểm tra subject tồn tại
-        //    var subject = await _subjectService.GetSubjectByIdAsync(subjectId);
-        //    if (subject == null)
-        //        return NotFound(new { message = "Không tìm thấy môn học" });
-
-        //    // Gọi service để xóa
-        //    var result = await _subjectService.DeleteAsync(subject);
-        //    if (result)
-        //        return Ok(new { message = "Xóa môn học thành công" });
-
-        //    return BadRequest(new { message = "Xóa môn học thất bại" });
-        //}
-
+     
         [HttpGet("filter-name")]
         public async Task<IActionResult> GetSubjectsByContainName([FromQuery] string? name)
         {
@@ -130,5 +105,42 @@ namespace BiologyRecognition.Controller.Controllers
 
             return BadRequest(new { message = "Cập nhật thất bại" });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSubjects(
+    [FromQuery] int? id,
+    [FromQuery] string? name)
+        {
+            // Tìm theo id
+            if (id.HasValue)
+            {
+                var subject = await _subjectService.GetSubjectByIdAsync(id.Value);
+                if (subject == null)
+                    return NotFound("Môn học không tồn tại.");
+
+                var dto = _mapper.Map<SubjectDTO>(subject);
+                return Ok(dto);
+            }
+
+            // Tìm theo tên chứa
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var list = await _subjectService.GetListSubjectByContainNameAsync(name);
+                if (list == null || list.Count == 0)
+                    return NotFound("Không có môn học phù hợp với từ khóa tìm kiếm.");
+
+                var dto = _mapper.Map<List<SubjectDTO>>(list);
+                return Ok(dto);
+            }
+
+            // Trả về tất cả
+            var subjects = await _subjectService.GetAllAsync();
+            if (subjects == null || subjects.Count == 0)
+                return NotFound("Không tìm thấy môn học nào.");
+
+            var dtoAll = _mapper.Map<List<SubjectDTO>>(subjects);
+            return Ok(dtoAll);
+        }
+
     }
 }

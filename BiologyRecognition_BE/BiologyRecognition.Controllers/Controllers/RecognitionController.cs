@@ -40,7 +40,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet(".")]
         public async Task<IActionResult> GetAllRecognitions()
         {
             var recognitions = await _recognitionService.GetAllAsync();
@@ -176,5 +176,45 @@ namespace BiologyRecognition.Controller.Controllers
                 return BadRequest(new { message = "Đã xảy ra lỗi trong quá trình nhận diện.", error = ex.Message, inner = ex.InnerException?.Message });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetRecognitions(
+    [FromQuery] int? id,
+    [FromQuery] int? userId)
+        {
+            // Lấy theo ID recognition
+            if (id.HasValue)
+            {
+                var recognition = await _recognitionService.GetByIdAsync(id.Value);
+                if (recognition == null || recognition.RecognitionId == 0)
+                    return NotFound("Không tìm thấy lịch sử tồn tại.");
+
+                var dto = _mapper.Map<RecognitionDTO>(recognition);
+                return Ok(dto);
+            }
+
+            // Lấy theo ID người dùng
+            if (userId.HasValue)
+            {
+                var account = await _accountService.GetUserAccountByIdAsync(userId.Value);
+                if (account == null)
+                    return NotFound(new { message = "Không tìm thấy người này trong hệ thống." });
+
+                var recognitions = await _recognitionService.GetRecognitionUserByIdAsync(userId.Value);
+                if (recognitions == null || recognitions.Count == 0)
+                    return NotFound("Người dùng này chưa có lịch sử nào.");
+
+                var dto = _mapper.Map<List<RecognitionDTO>>(recognitions);
+                return Ok(dto);
+            }
+
+            // Lấy tất cả nếu không truyền gì
+            var all = await _recognitionService.GetAllAsync();
+            if (all == null || all.Count == 0)
+                return NotFound("Không tìm thấy recognition nào.");
+
+            var dtoAll = _mapper.Map<List<RecognitionDTO>>(all);
+            return Ok(dtoAll);
+        }
+
     }
 }

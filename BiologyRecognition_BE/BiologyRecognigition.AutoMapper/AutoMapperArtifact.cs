@@ -24,7 +24,7 @@ namespace BiologyRecognigition.AutoMapper
         .ForMember(dest => dest.TopicName,
             opt => opt.MapFrom(src => src.ArtifactType.Topic.Name));
 
-            CreateMap<Artifact, ArtifaceDetailsDTO>()
+            CreateMap<Artifact, ArtifactDetailsDTO>()
     .ForMember(dest => dest.ArtifactName,
         opt => opt.MapFrom(src => src.Name))
     .ForMember(dest => dest.ArtifactTypeName,

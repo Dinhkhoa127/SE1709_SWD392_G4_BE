@@ -20,42 +20,52 @@ namespace BiologyRecognition.Controller.Controllers
             _mapper = mapper;
             _artifactTypeService = artifactTypeService;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAllArtifactTypes()
-        {
-            var list = await _artifactTypeService.GetAllAsync();
-            if (list == null || list.Count == 0)
-                return NotFound("Không có loại mẫu nào.");
+            [HttpGet(".")]
+            public async Task<IActionResult> GetAllArtifactTypes()
+            {
+                var list = await _artifactTypeService.GetAllAsync();
+                if (list == null || list.Count == 0)
+                    return NotFound("Không có loại mẫu nào.");
 
-            var dto = _mapper.Map<List<ArtifactTypeDTO>>(list);
-            return Ok(dto);
-        }
+                var dto = _mapper.Map<List<ArtifactTypeDTO>>(list);
+                return Ok(dto);
+            }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetArtifactTypeById(int id)
-        {
-            var entity = await _artifactTypeService.GetByIdAsync(id);
-            if (entity == null)
-                return NotFound("Loại mẫu không tồn tại.");
+            [HttpGet("{id}")]
+            public async Task<IActionResult> GetArtifactTypeById(int id)
+            {
+                var entity = await _artifactTypeService.GetByIdAsync(id);
+                if (entity == null)
+                    return NotFound("Loại mẫu không tồn tại.");
 
-            var dto = _mapper.Map<ArtifactTypeDTO>(entity);
-            return Ok(dto);
-        }
+                var dto = _mapper.Map<ArtifactTypeDTO>(entity);
+                return Ok(dto);
+            }
 
-        [HttpGet("filter-name")]
-        public async Task<IActionResult> GetArtifactTypesByContainName([FromQuery] string? name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
+            [HttpGet("filter-name")]
+            public async Task<IActionResult> GetArtifactTypesByContainName([FromQuery] string? name)
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                    return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
 
-            var list = await _artifactTypeService.GetArtifactTypesByContainsNameAsync(name);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có loại mẫu nào phù hợp.");
+                var list = await _artifactTypeService.GetArtifactTypesByContainsNameAsync(name);
+                if (list == null || list.Count == 0)
+                    return NotFound("Không có loại mẫu nào phù hợp.");
 
-            var dto = _mapper.Map<List<ArtifactTypeDTO>>(list);
-            return Ok(dto);
-        }
+                var dto = _mapper.Map<List<ArtifactTypeDTO>>(list);
+                return Ok(dto);
+            }
 
+            [HttpGet("by-topic/{topicId}")]
+            public async Task<IActionResult> GetArtifactTypesByTopicId(int topicId)
+            {
+                var list = await _artifactTypeService.GetListArtifactTypesByTopicIdAsync(topicId);
+                if (list == null || list.Count == 0)
+                    return NotFound("Không có loại mẫu nào cho nội dung này.");
+
+                var dto = _mapper.Map<List<ArtifactTypeDTO>>(list);
+                return Ok(dto);
+            }
         [HttpPost]
         public async Task<IActionResult> CreateArtifactType([FromBody] CreateArtifactTypeDTO dto)
         {
@@ -104,15 +114,50 @@ namespace BiologyRecognition.Controller.Controllers
             return BadRequest(new { message = "Cập nhật loại mẫu thất bại." });
         }
 
-        [HttpGet("by-topic/{topicId}")]
-        public async Task<IActionResult> GetArtifactTypesByTopicId(int topicId)
+        [HttpGet]
+        public async Task<IActionResult> GetArtifactTypes(
+    [FromQuery] int? id,
+    [FromQuery] string? name,
+    [FromQuery] int? topicId)
         {
-            var list = await _artifactTypeService.GetListArtifactTypesByTopicIdAsync(topicId);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có loại mẫu nào cho nội dung này.");
+            if (id.HasValue)
+            {
+                var entity = await _artifactTypeService.GetByIdAsync(id.Value);
+                if (entity == null)
+                    return NotFound("Loại mẫu không tồn tại.");
 
-            var dto = _mapper.Map<List<ArtifactTypeDTO>>(list);
-            return Ok(dto);
+                var dto = _mapper.Map<ArtifactTypeDTO>(entity);
+                return Ok(dto);
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var listByName = await _artifactTypeService.GetArtifactTypesByContainsNameAsync(name);
+                if (listByName == null || listByName.Count == 0)
+                    return NotFound("Không có loại mẫu nào phù hợp.");
+
+                var dtoByName = _mapper.Map<List<ArtifactTypeDTO>>(listByName);
+                return Ok(dtoByName);
+            }
+
+            if (topicId.HasValue)
+            {
+                var listByTopic = await _artifactTypeService.GetListArtifactTypesByTopicIdAsync(topicId.Value);
+                if (listByTopic == null || listByTopic.Count == 0)
+                    return NotFound("Không có loại mẫu nào cho nội dung này.");
+
+                var dtoByTopic = _mapper.Map<List<ArtifactTypeDTO>>(listByTopic);
+                return Ok(dtoByTopic);
+            }
+
+            var list = await _artifactTypeService.GetAllAsync();
+            if (list == null || list.Count == 0)
+                return NotFound("Không có loại mẫu nào.");
+
+            var dtoAll = _mapper.Map<List<ArtifactTypeDTO>>(list);
+            return Ok(dtoAll);
         }
+
+
     }
 }
