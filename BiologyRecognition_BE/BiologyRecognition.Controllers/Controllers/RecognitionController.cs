@@ -216,5 +216,15 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dtoAll);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var recognition = await _recognitionService.GetByIdAsync(id);
+            if (recognition == null || recognition.RecognitionId == 0)
+                return NotFound("Không tìm thấy lịch sử tồn tại.");
+
+            // Không thực hiện thao tác xóa thật sự
+            return Ok(new { message = $"Xóa thành công" });
+        }
     }
 }

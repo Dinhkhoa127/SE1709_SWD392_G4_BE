@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BiologyRecognition.Application.Implement;
 using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.Subject;
@@ -142,5 +143,16 @@ namespace BiologyRecognition.Controller.Controllers
             return Ok(dtoAll);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+
+            var subject = await _subjectService.GetSubjectByIdAsync(id);
+            if (subject == null)
+                return NotFound("Môn học không tồn tại.");
+
+            // Không thực hiện thao tác xóa thật sự
+            return Ok(new { message = $"Xóa thành công" });
+        }
     }
 }

@@ -9,6 +9,8 @@ public partial class Artifact
 {
     public int ArtifactId { get; set; }
 
+    public string ArtifactCode { get; set; }
+
     public int ArtifactTypeId { get; set; }
 
     public string Name { get; set; }

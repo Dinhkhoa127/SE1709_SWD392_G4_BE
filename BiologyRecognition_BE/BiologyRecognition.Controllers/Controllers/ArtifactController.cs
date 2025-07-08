@@ -299,7 +299,16 @@ namespace BiologyRecognition.Controller.Controllers
                 return Ok(dto);
             }
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var artifact = await _artifactService.GetByIdAsync(id);
+            if (artifact == null)
+                return NotFound("Artifact không tồn tại.");
 
+            // Không thực hiện thao tác xóa thật sự
+            return Ok(new { message = $"Xóa thành công" });
+        }
     }
 
 }

@@ -14,6 +14,11 @@ namespace BiologyRecognition.DTOs.Artifact
         [Required(ErrorMessage = "Loại ArtifactType là bắt buộc.")]
         public int ArtifactTypeId { get; set; }
 
+        [Required(ErrorMessage = "Mã Artifact là bắt buộc.")]
+        [StringLength(50, ErrorMessage = "Mã Artifact không được vượt quá 50 ký tự.")]
+        [RegularExpression(@"^ART.*$", ErrorMessage = "Mã Artifact phải bắt đầu bằng 'ART'.")]
+        public string ArtifactCode { get; set; }
+
         [Required(ErrorMessage = "Tên Artifact là bắt buộc.")]
         [StringLength(100, ErrorMessage = "Tên Artifact không được dài quá 100 ký tự.")]
         public string Name { get; set; }

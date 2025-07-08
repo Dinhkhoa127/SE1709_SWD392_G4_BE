@@ -9,6 +9,8 @@ namespace BiologyRecognition.DTOs.Artifact
     public class ArtifactDetailsDTO
     {
         public int ArtifactId { get; set; }
+        public string ArtifactCode { get; set; }
+
         public string ArtifactName { get; set; }
 
         public string Description { get; set; }

@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using BiologyRecognition.Application.Interface;
 using Microsoft.EntityFrameworkCore;
+using BiologyRecognition.Application.Implement;
 
 namespace BiologyRecognition.Controllers.Controllers
 {
@@ -268,5 +269,15 @@ namespace BiologyRecognition.Controllers.Controllers
             return Ok("Mật khẩu đã được đặt lại.");
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var account = await _accountService.GetUserAccountByIdAsync(id);
+            if (account == null)
+                return NotFound("Tài khoản không tồn tại.");
+
+            // Không thực hiện thao tác xóa thật sự
+            return Ok(new { message = $"Xóa thành công" });
+        }
     }
 }

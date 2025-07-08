@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BiologyRecognition.Application.Implement;
 using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.ArtifactMedia;

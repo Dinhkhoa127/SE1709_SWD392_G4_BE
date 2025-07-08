@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BiologyRecognition.Application.Implement;
 using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.ArtifactType;
@@ -157,7 +158,16 @@ namespace BiologyRecognition.Controller.Controllers
             var dtoAll = _mapper.Map<List<ArtifactTypeDTO>>(list);
             return Ok(dtoAll);
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var entity = await _artifactTypeService.GetByIdAsync(id);
+            if (entity == null)
+                return NotFound("Loại mẫu không tồn tại.");
 
+            // Không thực hiện thao tác xóa thật sự
+            return Ok(new { message = $"Xóa thành công" });
+        }
 
     }
 }

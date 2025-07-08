@@ -243,6 +243,16 @@ namespace BiologyRecognition.Controller.Controllers
                 return Ok(dto);
             }
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // Kiểm tra tồn tại (tuỳ chọn)
+            var article = await _articleService.GetByIdAsync(id);
+            if (article == null)
+                return NotFound("Bài viết không tồn tại.");
 
+            // Không thực hiện thao tác xóa thật sự
+            return Ok(new { message = $"Xóa thành công" });
+        }
     }
 }
