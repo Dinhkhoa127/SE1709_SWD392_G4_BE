@@ -16,22 +16,20 @@ namespace BiologyRecognition.Infrastructure
         public RecognitionRepository(SE1709_SWD392_G4_BiologyRecognitionSystemContext context) => _context = context;
 
 
-        public async Task<List<Recognition>> GetAllAsync()
+        public IQueryable<Recognition> GetAllAsync()
         {
-            return await _context.Recognitions.Include(r => r.Artifact).ToListAsync();
+            return  _context.Recognitions.Include(r => r.Artifact);
         }
-
         public async Task<Recognition> GetByIdAsync(int id)
         {
             return await _context.Recognitions.Include(r => r.Artifact)
                 .FirstOrDefaultAsync(r => r.RecognitionId == id) ;
         }
 
-        public async Task<List<Recognition>> GetRecognitionUserByIdAsync(int userId)
+        public IQueryable<Recognition> GetRecognitionUserByIdAsync(int userId)
         {
-            return await _context.Recognitions.Include(r => r.Artifact)
-                .Where(r => r.UserId == userId).ToListAsync();
+            return  _context.Recognitions.Include(r => r.Artifact)
+                .Where(r => r.UserId == userId);
         }
-
     }
 }

@@ -32,7 +32,8 @@ namespace BiologyRecognition.Controllers.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAccounts([FromQuery] int? id)
+        public async Task<IActionResult> GetAccounts([FromQuery] int? id, [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 3)
         {
             if (id.HasValue)
             {
@@ -44,11 +45,11 @@ namespace BiologyRecognition.Controllers.Controllers
                 return Ok(dto);
             }
 
-            var accounts = await _accountService.GetAllAsync();
-            if (accounts == null || accounts.Count == 0)
+            var accounts = await _accountService.GetAllAsync(page,pageSize);
+            if (accounts.Items == null || accounts.TotalItems == 0)
                 return NotFound("Không tìm thấy tài khoản nào.");
 
-            var dtoList = _mapper.Map<List<UserAccountDTO>>(accounts);
+            var dtoList = _mapper.Map<List<UserAccountDTO>>(accounts.Items);
             return Ok(dtoList);
         }
 

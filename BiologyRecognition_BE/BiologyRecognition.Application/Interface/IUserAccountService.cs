@@ -1,4 +1,5 @@
 ﻿using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace BiologyRecognition.Application.Interface
 {
     public interface IUserAccountService
     {
-        Task<List<UserAccount>> GetAllAsync();
+        Task<PagedResult<UserAccount>> GetAllAsync(int page, int pageSize);
         Task<UserAccount> GetUserAccountByIdAsync(int id);
         Task<UserAccount> GetUserAccountByNameOrEmailAsync(string nameOrEmails);
         Task<int> CreateAsync(UserAccount userAccount);

@@ -174,7 +174,7 @@ namespace BiologyRecognition.Controller.Controllers
     [FromQuery] string? artifactName,
     [FromQuery] bool includeDetails = false,
     [FromQuery] int page = 1,
-    [FromQuery] int pageSize = 10)
+    [FromQuery] int pageSize = 3)
         {
             // 1. Lấy theo ID
             if (id.HasValue)

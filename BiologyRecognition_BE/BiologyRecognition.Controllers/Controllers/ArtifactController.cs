@@ -205,7 +205,7 @@ namespace BiologyRecognition.Controller.Controllers
     [FromQuery] bool includeDetails = false,
     [FromQuery] bool includeMediaAndArticles = false,
     [FromQuery] int page = 1,
-    [FromQuery] int pageSize = 10)
+    [FromQuery] int pageSize = 3)
         {
             // 1. Lấy theo ID (có thể gộp chi tiết)
             if (id.HasValue)

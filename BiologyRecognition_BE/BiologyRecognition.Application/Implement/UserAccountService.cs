@@ -1,5 +1,7 @@
-﻿using BiologyRecognition.Application.Interface;
+﻿using Azure;
+using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs;
 using BiologyRecognition.DTOs.UserAccount;
 using BiologyRecognition.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +19,25 @@ namespace BiologyRecognition.Application.Implement
         private readonly UserAccountRepository _repository;
         public UserAccountService() => _repository ??= new UserAccountRepository();
 
-        public async Task<List<UserAccount>> GetAllAsync()
+        public async Task<PagedResult<UserAccount>> GetAllAsync(int page, int pageSize)
         {
-            return await _repository.GetAllAsync();
+            var query =  _repository.GetAllAsync();
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(c=> c.CreatedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<UserAccount>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
         }
         public async Task<UserAccount> GetUserAccountByIdAsync(int id)
         {
@@ -35,7 +53,6 @@ namespace BiologyRecognition.Application.Implement
         }
         public async Task<int> CreateAccountByAdminAsync(UserAccount userAccount)
         {
-            userAccount.Password = BCrypt.Net.BCrypt.HashPassword(userAccount.Password);
             return await _repository.CreateAsync(userAccount);
         }
         public async Task<UserAccount> GetUserAccountByPhone(string phone)

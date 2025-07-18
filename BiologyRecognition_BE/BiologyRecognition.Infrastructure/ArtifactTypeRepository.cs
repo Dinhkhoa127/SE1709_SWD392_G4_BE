@@ -15,11 +15,10 @@ namespace BiologyRecognition.Infrastructure
         public ArtifactTypeRepository() { }
         public ArtifactTypeRepository(SE1709_SWD392_G4_BiologyRecognitionSystemContext context) => _context = context;
 
-        public async Task<List<ArtifactType>> GetArtifactTypesByContainsNameAsync(string name)
+        public IQueryable<ArtifactType> GetArtifactTypesByContainsNameAsync(string name)
         {
-            return await _context.ArtifactTypes.Include(c => c.Topic).Where(u => u.Name.ToLower().Contains(name.ToLower())).ToListAsync();
+            return _context.ArtifactTypes.Include(c => c.Topic).Where(u => u.Name.ToLower().Contains(name.ToLower()));
         }
-
         public async Task<int> UpdateAsync(ArtifactType artifactType)
         {
 
@@ -31,20 +30,22 @@ namespace BiologyRecognition.Infrastructure
 
             return await _context.SaveChangesAsync();
         }
-        public async Task<List<ArtifactType>> GetAllAsync()
+
+        public IQueryable<ArtifactType> GetAllAsync()
         {
-            return await _context.ArtifactTypes.Include(c => c.Topic).ToListAsync();
+            return _context.ArtifactTypes.Include(c => c.Topic);
         }
         public async Task<ArtifactType> GetByIdAsync(int id)
         {
             return await _context.ArtifactTypes.Include(c => c.Topic).FirstOrDefaultAsync(h => h.ArtifactTypeId == id);
         }
-        public async Task<List<ArtifactType>> GetListArtifactTypesByTopicIdAsync(int id)
+
+        public IQueryable<ArtifactType> GetListArtifactTypesByTopicIdAsync(int id)
         {
-            return await _context.ArtifactTypes.Include(c => c.Topic)
-                .Where(u => u.TopicId == id)
-                .ToListAsync();
+            return _context.ArtifactTypes.Include(c => c.Topic)
+                .Where(u => u.TopicId == id);
         }
+
 
     }
 }

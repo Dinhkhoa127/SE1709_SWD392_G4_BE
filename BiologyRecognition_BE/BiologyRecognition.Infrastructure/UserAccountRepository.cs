@@ -28,7 +28,11 @@ namespace BiologyRecognition.Infrastructure
         {
             return await _context.UserAccounts.FirstOrDefaultAsync(u => u.Email == email.Trim());
         }
+        public IQueryable<UserAccount> GetAllAsync()
+        {
+            return  _context.UserAccounts;
+        }
 
-        
+
     }
 }

@@ -110,7 +110,9 @@ namespace BiologyRecognition.Controller.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSubjects(
     [FromQuery] int? id,
-    [FromQuery] string? name)
+    [FromQuery] string? name,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 3)
         {
             // Tìm theo id
             if (id.HasValue)
@@ -126,20 +128,20 @@ namespace BiologyRecognition.Controller.Controllers
             // Tìm theo tên chứa
             if (!string.IsNullOrWhiteSpace(name))
             {
-                var list = await _subjectService.GetListSubjectByContainNameAsync(name);
-                if (list == null || list.Count == 0)
+                var list = await _subjectService.GetListSubjectByContainNameAsync(name, page, pageSize);
+                if (list.Items == null || list.TotalItems == 0)
                     return NotFound("Không có môn học phù hợp với từ khóa tìm kiếm.");
 
-                var dto = _mapper.Map<List<SubjectDTO>>(list);
+                var dto = _mapper.Map<List<SubjectDTO>>(list.Items);
                 return Ok(dto);
             }
 
             // Trả về tất cả
-            var subjects = await _subjectService.GetAllAsync();
-            if (subjects == null || subjects.Count == 0)
+            var subjects = await _subjectService.GetAllAsync(page, pageSize);
+            if (subjects.Items == null || subjects.TotalItems == 0)
                 return NotFound("Không tìm thấy môn học nào.");
 
-            var dtoAll = _mapper.Map<List<SubjectDTO>>(subjects);
+            var dtoAll = _mapper.Map<List<SubjectDTO>>(subjects.Items);
             return Ok(dtoAll);
         }
 
