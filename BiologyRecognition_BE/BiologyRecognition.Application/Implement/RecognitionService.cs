@@ -1,6 +1,8 @@
 ﻿using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs;
 using BiologyRecognition.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +23,27 @@ namespace BiologyRecognition.Application.Implement
 
         public Task<List<Recognition>> GetAllAsync()
         {
-            return _repository.GetAllAsync();
+            return _repository.GetAllAsync().ToListAsync();
+        }
+
+        public async Task<PagedResult<Recognition>> GetAllAsync(int page, int pageSize)
+        {
+            var query = _repository.GetAllAsync();
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Recognition>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
         }
 
         public Task<Recognition> GetByIdAsync(int id)
@@ -31,7 +53,27 @@ namespace BiologyRecognition.Application.Implement
 
         public Task<List<Recognition>> GetRecognitionUserByIdAsync(int userId)
         {
-            return _repository.GetRecognitionUserByIdAsync(userId);
+            return _repository.GetRecognitionUserByIdAsync(userId).ToListAsync();
+        }
+
+        public async Task<PagedResult<Recognition>> GetRecognitionUserByIdAsync(int userId, int page, int pageSize)
+        {
+            var query = _repository.GetRecognitionUserByIdAsync(userId);
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Recognition>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,10 @@ namespace BiologyRecognition.Application.Interface
     {
         Task<List<Recognition>> GetAllAsync();
 
-
+        Task<PagedResult<Recognition>> GetAllAsync(int page, int pageSize);
         Task<Recognition> GetByIdAsync(int id);
         Task<List<Recognition>> GetRecognitionUserByIdAsync(int userId);
+        Task<PagedResult<Recognition>> GetRecognitionUserByIdAsync(int userId, int page, int pageSize);
         Task<int> CreatAsync (Recognition recognition);
 
     }

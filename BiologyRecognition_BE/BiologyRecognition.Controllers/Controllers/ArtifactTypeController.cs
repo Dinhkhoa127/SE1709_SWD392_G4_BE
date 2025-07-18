@@ -119,7 +119,9 @@ namespace BiologyRecognition.Controller.Controllers
         public async Task<IActionResult> GetArtifactTypes(
     [FromQuery] int? id,
     [FromQuery] string? name,
-    [FromQuery] int? topicId)
+    [FromQuery] int? topicId,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 3)
         {
             if (id.HasValue)
             {
@@ -133,29 +135,29 @@ namespace BiologyRecognition.Controller.Controllers
 
             if (!string.IsNullOrWhiteSpace(name))
             {
-                var listByName = await _artifactTypeService.GetArtifactTypesByContainsNameAsync(name);
-                if (listByName == null || listByName.Count == 0)
+                var listByName = await _artifactTypeService.GetArtifactTypesByContainsNameAsync(name, page, pageSize);
+                if (listByName.Items == null || listByName.TotalItems == 0)
                     return NotFound("Không có loại mẫu nào phù hợp.");
 
-                var dtoByName = _mapper.Map<List<ArtifactTypeDTO>>(listByName);
+                var dtoByName = _mapper.Map<List<ArtifactTypeDTO>>(listByName.Items);
                 return Ok(dtoByName);
             }
 
             if (topicId.HasValue)
             {
-                var listByTopic = await _artifactTypeService.GetListArtifactTypesByTopicIdAsync(topicId.Value);
-                if (listByTopic == null || listByTopic.Count == 0)
+                var listByTopic = await _artifactTypeService.GetListArtifactTypesByTopicIdAsync(topicId.Value, page, pageSize);
+                if (listByTopic.Items == null || listByTopic.TotalItems == 0)
                     return NotFound("Không có loại mẫu nào cho nội dung này.");
 
-                var dtoByTopic = _mapper.Map<List<ArtifactTypeDTO>>(listByTopic);
+                var dtoByTopic = _mapper.Map<List<ArtifactTypeDTO>>(listByTopic.Items);
                 return Ok(dtoByTopic);
             }
 
-            var list = await _artifactTypeService.GetAllAsync();
-            if (list == null || list.Count == 0)
+            var all = await _artifactTypeService.GetAllAsync(page, pageSize);
+            if (all.Items == null || all.TotalItems == 0)
                 return NotFound("Không có loại mẫu nào.");
 
-            var dtoAll = _mapper.Map<List<ArtifactTypeDTO>>(list);
+            var dtoAll = _mapper.Map<List<ArtifactTypeDTO>>(all.Items);
             return Ok(dtoAll);
         }
         [HttpDelete("{id}")]

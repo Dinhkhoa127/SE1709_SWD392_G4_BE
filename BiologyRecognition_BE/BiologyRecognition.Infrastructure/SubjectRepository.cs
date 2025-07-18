@@ -22,17 +22,16 @@ namespace BiologyRecognition.Infrastructure
                 .Include(c => c.ModifiedByNavigation)
                 .FirstOrDefaultAsync(u => u.Name == name);
         }
-        public async Task<List<Subject>> GetListSubjectByContainNameAsync(string name)
+        public IQueryable<Subject> GetListSubjectByContainNameAsync(string name)
         {
-            return await _context.Subjects.Include(c => c.CreatedByNavigation)
+            return _context.Subjects.Include(c => c.CreatedByNavigation)
                 .Include(c => c.ModifiedByNavigation)
-                .Where(u => u.Name.ToLower().Contains(name.ToLower()))
-                .ToListAsync();
+                .Where(u => u.Name.ToLower().Contains(name.ToLower()));
         }
-        public async Task<List<Subject>> GetAllAsync()
+        public IQueryable<Subject> GetAllAsync()
         {
-            return await _context.Subjects.Include(c => c.CreatedByNavigation)
-                .Include(c => c.ModifiedByNavigation).ToListAsync();
+            return _context.Subjects.Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation);
         }
         public async Task<Subject> GetByIdAsync(int id)
         {

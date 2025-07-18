@@ -76,7 +76,7 @@ namespace BiologyRecognition.Controller.Controllers
         opt.Items["artifactName"] = artifactName.ToLower();
     })
 ).ToList();
-             
+
             return Ok(dto);
         }
 
@@ -151,7 +151,9 @@ namespace BiologyRecognition.Controller.Controllers
     [FromQuery] int? id,
     [FromQuery] string? name,
     [FromQuery] string? artifactName,
-    [FromQuery] int? chapterId
+    [FromQuery] int? chapterId,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 3
 )
         {
             // 1. Nếu có ID -> Lấy theo ID
@@ -168,11 +170,11 @@ namespace BiologyRecognition.Controller.Controllers
             // 2. Nếu có artifactName -> Lấy theo artifact
             if (!string.IsNullOrWhiteSpace(artifactName))
             {
-                var topics = await _topicService.GetListTopicsByArtifactNameAsync(artifactName);
-                if (topics == null || topics.Count == 0)
+                var topics = await _topicService.GetListTopicsByArtifactNameAsync(artifactName, page, pageSize);
+                if (topics.Items == null || topics.TotalItems == 0)
                     return NotFound("Không có chủ đề nào phù hợp với tên đối tượng.");
 
-                var dto = topics.Select(topic =>
+                var dto = topics.Items.Select(topic =>
                     _mapper.Map<TopicArtifactChapterDTO>(topic, opt =>
                     {
                         opt.Items["artifactName"] = artifactName.ToLower();
@@ -185,31 +187,31 @@ namespace BiologyRecognition.Controller.Controllers
             // 3. Nếu có chapterId -> Lấy theo chương
             if (chapterId.HasValue)
             {
-                var topics = await _topicService.GetListTopicsByChapterIdAsync(chapterId.Value);
-                if (topics == null || topics.Count == 0)
+                var topics = await _topicService.GetListTopicsByChapterIdAsync(chapterId.Value, page, pageSize);
+                if (topics.Items == null || topics.TotalItems == 0)
                     return NotFound("Không có nội dung nào trong bài này.");
 
-                var dto = _mapper.Map<List<TopicDTO>>(topics);
+                var dto = _mapper.Map<List<TopicDTO>>(topics.Items);
                 return Ok(dto);
             }
 
             // 4. Nếu có name -> Tìm kiếm theo tên
             if (!string.IsNullOrWhiteSpace(name))
             {
-                var list = await _topicService.GetListTopicsByContainNameAsync(name);
-                if (list == null || list.Count == 0)
+                var list = await _topicService.GetListTopicsByContainNameAsync(name, page, pageSize);
+                if (list.Items == null || list.TotalItems == 0)
                     return NotFound("Không có chủ đề phù hợp với từ khóa tìm kiếm.");
 
-                var dto = _mapper.Map<List<TopicDTO>>(list);
+                var dto = _mapper.Map<List<TopicDTO>>(list.Items);
                 return Ok(dto);
             }
 
             // 5. Nếu không có gì -> Trả toàn bộ
-            var allTopics = await _topicService.GetAllAsync();
-            if (allTopics == null || allTopics.Count == 0)
+            var allTopics = await _topicService.GetAllAsync(page, pageSize);
+            if (allTopics.Items == null || allTopics.TotalItems == 0)
                 return NotFound("Không tìm thấy chủ đề nào.");
 
-            var allDto = _mapper.Map<List<TopicDTO>>(allTopics);
+            var allDto = _mapper.Map<List<TopicDTO>>(allTopics.Items);
             return Ok(allDto);
         }
 

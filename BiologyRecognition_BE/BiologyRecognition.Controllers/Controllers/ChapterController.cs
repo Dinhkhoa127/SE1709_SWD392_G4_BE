@@ -130,7 +130,9 @@ namespace BiologyRecognition.Controller.Controllers
         public async Task<IActionResult> GetChapters(
     [FromQuery] int? id,
     [FromQuery] string? name,
-    [FromQuery] int? subjectId)
+    [FromQuery] int? subjectId,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 3)
         {
             if (id.HasValue)
             {
@@ -144,29 +146,29 @@ namespace BiologyRecognition.Controller.Controllers
 
             if (!string.IsNullOrWhiteSpace(name))
             {
-                var listByName = await _chapterService.GetListChaptersByContainNameAsync(name);
-                if (listByName == null || listByName.Count == 0)
+                var listByName = await _chapterService.GetListChaptersByContainNameAsync(name, page, pageSize);
+                if (listByName.Items == null || listByName.TotalItems == 0)
                     return NotFound("Không có bài phù hợp với từ khóa tìm kiếm.");
 
-                var dtoByName = _mapper.Map<List<ChapterDTO>>(listByName);
+                var dtoByName = _mapper.Map<List<ChapterDTO>>(listByName.Items);
                 return Ok(dtoByName);
             }
 
             if (subjectId.HasValue)
             {
-                var listBySubject = await _chapterService.GetListChaptersBySubjectIdAsync(subjectId.Value);
-                if (listBySubject == null || listBySubject.Count == 0)
+                var listBySubject = await _chapterService.GetListChaptersBySubjectIdAsync(subjectId.Value, page, pageSize);
+                if (listBySubject.Items == null || listBySubject.TotalItems == 0)
                     return NotFound("Không có bài nào trong chương này.");
 
-                var dtoBySubject = _mapper.Map<List<ChapterDTO>>(listBySubject);
+                var dtoBySubject = _mapper.Map<List<ChapterDTO>>(listBySubject.Items);
                 return Ok(dtoBySubject);
             }
 
-            var all = await _chapterService.GetAllAsync();
-            if (all == null || all.Count == 0)
+            var all = await _chapterService.GetAllAsync(page, pageSize);
+            if (all.Items == null || all.TotalItems == 0)
                 return NotFound("Không tìm thấy bài nào.");
 
-            var dtoAll = _mapper.Map<List<ChapterDTO>>(all);
+            var dtoAll = _mapper.Map<List<ChapterDTO>>(all.Items);
             return Ok(dtoAll);
         }
 

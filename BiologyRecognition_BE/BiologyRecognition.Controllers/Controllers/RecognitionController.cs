@@ -179,7 +179,9 @@ namespace BiologyRecognition.Controller.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRecognitions(
     [FromQuery] int? id,
-    [FromQuery] int? userId)
+    [FromQuery] int? userId,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 3)
         {
             // Lấy theo ID recognition
             if (id.HasValue)
@@ -199,20 +201,20 @@ namespace BiologyRecognition.Controller.Controllers
                 if (account == null)
                     return NotFound(new { message = "Không tìm thấy người này trong hệ thống." });
 
-                var recognitions = await _recognitionService.GetRecognitionUserByIdAsync(userId.Value);
-                if (recognitions == null || recognitions.Count == 0)
+                var recognitions = await _recognitionService.GetRecognitionUserByIdAsync(userId.Value, page, pageSize);
+                if (recognitions.Items == null || recognitions.TotalItems == 0)
                     return NotFound("Người dùng này chưa có lịch sử nào.");
 
-                var dto = _mapper.Map<List<RecognitionDTO>>(recognitions);
+                var dto = _mapper.Map<List<RecognitionDTO>>(recognitions.Items);
                 return Ok(dto);
             }
 
             // Lấy tất cả nếu không truyền gì
-            var all = await _recognitionService.GetAllAsync();
-            if (all == null || all.Count == 0)
+            var all = await _recognitionService.GetAllAsync(page, pageSize);
+            if (all.Items == null || all.TotalItems == 0)
                 return NotFound("Không tìm thấy recognition nào.");
 
-            var dtoAll = _mapper.Map<List<RecognitionDTO>>(all);
+            var dtoAll = _mapper.Map<List<RecognitionDTO>>(all.Items);
             return Ok(dtoAll);
         }
 

@@ -15,12 +15,11 @@ namespace BiologyRecognition.Infrastructure
         public TopicRepository() { }
         public TopicRepository(SE1709_SWD392_G4_BiologyRecognitionSystemContext context) => _context = context;
 
-        public async Task<List<Topic>> GetTopicsByContainsNameAsync(string name)
+        public IQueryable<Topic> GetTopicsByContainsNameAsync(string name)
         {
-            return await _context.Topics.Include(c => c.Chapter).Include(c => c.CreatedByNavigation)
-                .Include(c => c.ModifiedByNavigation).Where(u => u.Name.ToLower().Contains(name.ToLower())).ToListAsync();
+            return _context.Topics.Include(c => c.Chapter).Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation).Where(u => u.Name.ToLower().Contains(name.ToLower()));
         }
-
         public async Task<int> UpdateAsync(Topic topic)
         {
             topic.ModifiedByNavigation = null;
@@ -32,36 +31,35 @@ namespace BiologyRecognition.Infrastructure
 
             return await _context.SaveChangesAsync();
         }
-        public async Task<List<Topic>> GetAllAsync()
+
+        public IQueryable<Topic> GetAllAsync()
         {
-            return await _context.Topics.Include(c => c.Chapter).Include(c => c.CreatedByNavigation)
-                .Include(c => c.ModifiedByNavigation).ToListAsync();
+            return _context.Topics.Include(c => c.Chapter).Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation);
         }
         public async Task<Topic> GetByIdAsync(int id)
         {
             return await _context.Topics.Include(c => c.Chapter).Include(c => c.CreatedByNavigation)
                 .Include(c => c.ModifiedByNavigation).FirstOrDefaultAsync(h => h.TopicId == id);
         }
-        public async Task<List<Topic>> GetListTopicsByChapterIdAsync(int id)
-        {
-            return await _context.Topics.Include(c => c.Chapter).Include(c => c.CreatedByNavigation)
-                .Include(c => c.ModifiedByNavigation)
-                .Where(u => u.ChapterId == id)
-                .ToListAsync();
-        }
 
-        public async Task<List<Topic>> GetListTopicsByArtifactNameAsync(string artifactName)
+        public IQueryable<Topic> GetListTopicsByChapterIdAsync(int id)
         {
-            return await _context.Topics
+            return  _context.Topics.Include(c => c.Chapter).Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation)
+                .Where(u => u.ChapterId == id);
+        }
+        
+        public IQueryable<Topic> GetListTopicsByArtifactNameAsync(string artifactName)
+        {
+            return  _context.Topics
                 .Include(c => c.Chapter)
                 .Include(c => c.CreatedByNavigation)
                 .Include(c => c.ModifiedByNavigation)
                 .Include(a => a.ArtifactTypes)
                     .ThenInclude(at => at.Artifacts.Where(ar => ar.Name.ToLower().Contains(artifactName.ToLower())))
-                .Where(t => t.ArtifactTypes.Any(at => at.Artifacts.Any(ar => ar.Name.ToLower().Contains(artifactName.ToLower()))))
-                .ToListAsync();
+                .Where(t => t.ArtifactTypes.Any(at => at.Artifacts.Any(ar => ar.Name.ToLower().Contains(artifactName.ToLower()))));
         }
-    
 
     }
 }

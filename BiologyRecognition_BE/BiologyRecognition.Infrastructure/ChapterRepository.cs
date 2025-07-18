@@ -20,12 +20,12 @@ namespace BiologyRecognition.Infrastructure
             return await _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation)
                 .Include(c => c.ModifiedByNavigation).FirstOrDefaultAsync(u => u.Name == name);
         }
-        public async Task<List<Chapter>> GetListChaptersByContainNameAsync(string name)
+
+        public IQueryable<Chapter> GetListChaptersByContainNameAsync(string name)
         {
-            return await _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation)
+            return  _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation)
                 .Include(c => c.ModifiedByNavigation)
-                .Where(u => u.Name.ToLower().Contains(name.ToLower()))
-                .ToListAsync();
+                .Where(u => u.Name.ToLower().Contains(name.ToLower()));
         }
         public async Task<int> UpdateAsync(Chapter chapter)
         {
@@ -38,19 +38,16 @@ namespace BiologyRecognition.Infrastructure
 
             return await _context.SaveChangesAsync();
         }
-        public async Task<List<Chapter>> GetAllAsync()
+        public IQueryable<Chapter> GetAllAsync()
         {
-            return await _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation).Include(c => c.ModifiedByNavigation).ToListAsync();
+            return _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation).Include(c => c.ModifiedByNavigation);
         }
-
-        public async Task<List<Chapter>> GetListChaptersBySubjectIdAsync(int id)
+        public IQueryable<Chapter> GetListChaptersBySubjectIdAsync(int id)
         {
-            return await _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation)
+            return _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation)
                 .Include(c => c.ModifiedByNavigation)
-                .Where(u => u.SubjectId == id)
-                .ToListAsync();
+                .Where(u => u.SubjectId == id);
         }
-
         public async Task<Chapter> GetByIdAsync(int id)
         {
             return await _context.Chapters.Include(c => c.Subject).Include(c => c.CreatedByNavigation)
