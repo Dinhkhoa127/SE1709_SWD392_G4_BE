@@ -1,6 +1,9 @@
-﻿using BiologyRecognition.Application.Interface;
+﻿using Azure;
+using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs;
 using BiologyRecognition.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,9 +26,29 @@ namespace BiologyRecognition.Application.Implement
             return _repository.RemoveAsync(artifactMedia);
         }
 
-        public Task<List<ArtifactMedia>> GetAllAsync()
+        public async Task<PagedResult<ArtifactMedia>> GetAllAsync(int page, int pageSize)
         {
-            return _repository.GetAllAsync();
+            var query = _repository.GetAllAsync();
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<ArtifactMedia>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
+        }
+
+        public async Task<List<ArtifactMedia>> GetAllAsync()
+        {
+            return await _repository.GetAllAsync().ToListAsync();
         }
 
         public Task<ArtifactMedia> GetByIdAsync(int id)
@@ -33,19 +56,79 @@ namespace BiologyRecognition.Application.Implement
             return _repository.GetByIdAsync(id);
         }
 
-        public Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactIdAsync(int id)
+        public async Task<PagedResult<ArtifactMedia>> GetListArtifactMediaByArtifactIdAsync(int id, int page, int pageSize)
         {
-            return _repository.GetListArtifactMediaByArtifactIdAsync(id);
+            var query = _repository.GetListArtifactMediaByArtifactIdAsync(id);
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<ArtifactMedia>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
         }
 
-        public Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name)
+        public async Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactIdAsync(int id)
         {
-            return _repository.GetListArtifactMediaByArtifactNameAsync(name);
+            return await _repository.GetListArtifactMediaByArtifactIdAsync(id).ToListAsync();
         }
 
-        public Task<List<ArtifactMedia>> GetListArtifactMediaByTypeAsync(string type)
+        public async Task<PagedResult<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name, int page, int pageSize)
         {
-            return _repository.GetListArtifactMediaByTypeAsync(type);
+            var query = _repository.GetListArtifactMediaByArtifactNameAsync(name);
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<ArtifactMedia>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
+        }
+
+        public async Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name)
+        {
+           return await _repository.GetListArtifactMediaByArtifactNameAsync(name).ToListAsync();
+        }
+
+        public async Task<PagedResult<ArtifactMedia>> GetListArtifactMediaByTypeAsync(string type, int page, int pageSize)
+        {
+            var query = _repository.GetListArtifactMediaByTypeAsync(type);
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<ArtifactMedia>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
+        }
+
+        public async Task<List<ArtifactMedia>> GetListArtifactMediaByTypeAsync(string type)
+        {
+          return await _repository.GetListArtifactMediaByTypeAsync(type).ToListAsync();
         }
 
         public Task<int> UpdateAsync(ArtifactMedia artifactMedia)

@@ -17,12 +17,16 @@ namespace BiologyRecognition.Infrastructure
         public ArticleRepository(SE1709_SWD392_G4_BiologyRecognitionSystemContext context) => _context = context;
 
 
-        public async Task<List<Article>> GetArticlesByArtifactIdAsync(int artifactId)
+        public IQueryable<Article> GetArticlesByArtifactIdAsync(int artifactId)
         {
-            return await _context.Articles.Include(aa => aa.Artifacts).Include(aa => aa.ModifiedByNavigation).Include(aa => aa.CreatedByNavigation)
-.Where(a => a.Artifacts.Any(ar => ar.ArtifactId == artifactId)).ToListAsync();
+            return _context.Articles
+                .Include(aa => aa.Artifacts)
+                .Include(aa => aa.ModifiedByNavigation)
+                .Include(aa => aa.CreatedByNavigation)
+                .Where(a => a.Artifacts.Any(ar => ar.ArtifactId == artifactId));
         }
-       
+    
+
         public async Task<int> UpdateAsync(Article article)
         {
             article.Artifacts = null;
@@ -35,10 +39,12 @@ namespace BiologyRecognition.Infrastructure
 
             return await _context.SaveChangesAsync();
         }
-        public async Task<List<Article>> GetAllAsync()
+        public IQueryable<Article> GetAllAsync()
         {
-            return await _context.Articles.Include(aa => aa.Artifacts).Include(aa => aa.ModifiedByNavigation).Include(aa => aa.CreatedByNavigation)
-               .ToListAsync();
+            return _context.Articles
+                .Include(aa => aa.Artifacts)
+                .Include(aa => aa.ModifiedByNavigation)
+                .Include(aa => aa.CreatedByNavigation); 
         }
 
         public async Task<int> CreateWithArtifactsAsync(Article article, List<Artifact> artifacts)
@@ -100,10 +106,13 @@ namespace BiologyRecognition.Infrastructure
                .FirstOrDefaultAsync(h => h.ArticleId == id);
         }
 
-        public async Task<List<Article>> GetListArticleByArtifactNameAsync(string name)
+        public IQueryable<Article> GetListArticleByArtifactNameAsync(string name)
         {
-            return await _context.Articles.Include(aa => aa.Artifacts)
-                .Where(a => a.Artifacts.Any(ar => ar.Name.Contains(name))).ToListAsync();
+            return _context.Articles
+                .Include(aa => aa.Artifacts)
+                .Include(aa => aa.ModifiedByNavigation)
+                .Include(aa => aa.CreatedByNavigation)
+                .Where(a => a.Artifacts.Any(ar => ar.Name.Contains(name)));
         }
     }
 }

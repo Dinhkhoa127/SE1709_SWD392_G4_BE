@@ -58,40 +58,41 @@ namespace BiologyRecognition.Controller.Controllers
             if (artifact == null)
                 return NotFound("Artifact không tồn tại.");
 
-            var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(id);
-            var articleList = await _articleService.GetArticlesByArtifactIdAsync(id);
-            var artifactDto = _mapper.Map<ArtifactWithMediaArticleDTO>(artifact);
-            artifactDto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(mediaList);
-            artifactDto.ArticleList = _mapper.Map<List<ArticleDTO>>(articleList);
-            return Ok(artifactDto);
+            //var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(id);
+            //var articleList = await _articleService.GetArticlesByArtifactIdAsync(id);
+            //var artifactDto = _mapper.Map<ArtifactWithMediaArticleDTO>(artifact);
+            //artifactDto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(mediaList);
+            //artifactDto.ArticleList = _mapper.Map<List<ArticleDTO>>(articleList);
+            return Ok();
         }
 
         [HttpGet("by-name/{name}/with-media-article")]
         public async Task<IActionResult> GetMediaArticleByArtifactName(string? name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });   
-            var artifact = await _artifactService.GetArtifactsByContainsNameAsync(name);
-            if (artifact == null || artifact.Count == 0)
-                return NotFound("Không tìm thấy artifact nào.");
+            //if (string.IsNullOrWhiteSpace(name))
+            //    return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });   
+            //var artifact = await _artifactService.GetArtifactsByContainsNameAsync(name);
+            //if (artifact == null || artifact.Count == 0)
+            //    return NotFound("Không tìm thấy artifact nào.");
 
-            var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(name);
-            var articleList = await _articleService.GetListArticleByArtifactNameAsync(name);
-            var artifactDtos = _mapper.Map<List<ArtifactWithMediaArticleDTO>>(artifact);
+            //var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(name);
+            //var articleList = await _articleService.GetListArticleByArtifactNameAsync(name);
+            //var artifactDtos = _mapper.Map<List<ArtifactWithMediaArticleDTO>>(artifact);
 
-            // Gán MediaList và ArticleList vào từng artifact
-            foreach (var dto in artifactDtos)
-            {
-                dto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(
-                    mediaList.Where(m => m.ArtifactId == dto.ArtifactId).ToList());
+            //// Gán MediaList và ArticleList vào từng artifact
+            //foreach (var dto in artifactDtos)
+            //{
+            //    dto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(
+            //        mediaList.Where(m => m.ArtifactId == dto.ArtifactId).ToList());
 
-                dto.ArticleList = _mapper.Map<List<ArticleDTO>>(
-                    articleList.Where(article =>
-                        article.Artifacts.Any(artifact => artifact.ArtifactId == dto.ArtifactId)
-                    ).ToList());
-            }
+            //    dto.ArticleList = _mapper.Map<List<ArticleDTO>>(
+            //        articleList.Where(article =>
+            //            article.Artifacts.Any(artifact => artifact.ArtifactId == dto.ArtifactId)
+            //        ).ToList());
+            //}
 
-            return Ok(artifactDtos);
+            //return Ok(artifactDtos);
+            return Ok();
         }
 
         [HttpGet("all-detail")]
@@ -202,7 +203,9 @@ namespace BiologyRecognition.Controller.Controllers
     [FromQuery] string? name,
     [FromQuery] int? artifactTypeId,
     [FromQuery] bool includeDetails = false,
-    [FromQuery] bool includeMediaAndArticles = false)
+    [FromQuery] bool includeMediaAndArticles = false,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
         {
             // 1. Lấy theo ID (có thể gộp chi tiết)
             if (id.HasValue)
@@ -233,21 +236,21 @@ namespace BiologyRecognition.Controller.Controllers
                 }
             }
 
-            // 2. Lọc theo tên
+            // 2. Lọc theo tên  
             if (!string.IsNullOrWhiteSpace(name))
             {
-                var list = await _artifactService.GetArtifactsByContainsNameAsync(name);
-                if (list == null || list.Count == 0)
+                var list = await _artifactService.GetArtifactsByContainsNameAsync(name,page,pageSize);
+                if (list.Items == null || list.TotalItems == 0)
                     return NotFound("Không có Artifact phù hợp với từ khóa tìm kiếm.");
 
                 if (includeMediaAndArticles)
                 {
                     var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(name);
                     var articleList = await _articleService.GetListArticleByArtifactNameAsync(name);
-                    var artifactDtos = _mapper.Map<List<ArtifactWithMediaArticleDTO>>(list);
+                    var artifactDtos = _mapper.Map<List<ArtifactWithMediaArticleDTO>>(list.Items);
 
                     foreach (var dto in artifactDtos)
-                    {
+                    {   
                         dto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(
                             mediaList.Where(m => m.ArtifactId == dto.ArtifactId).ToList());
 
@@ -262,12 +265,12 @@ namespace BiologyRecognition.Controller.Controllers
 
                 if (includeDetails)
                 {
-                    var dto = _mapper.Map<List<ArtifactDetailsDTO>>(list);
+                    var dto = _mapper.Map<List<ArtifactDetailsDTO>>(list.Items);
                     return Ok(dto);
                 }
                 else
                 {
-                    var dto = _mapper.Map<List<ArtifactDTO>>(list);
+                    var dto = _mapper.Map<List<ArtifactDTO>>(list.Items);
                     return Ok(dto);
                 }
             }
@@ -275,27 +278,27 @@ namespace BiologyRecognition.Controller.Controllers
             // 3. Lọc theo artifactTypeId
             if (artifactTypeId.HasValue)
             {
-                var artifacts = await _artifactService.GetListArtifactsByArtifactTypeIdAsync(artifactTypeId.Value);
-                if (artifacts == null || artifacts.Count == 0)
+                var artifacts = await _artifactService.GetListArtifactsByArtifactTypeIdAsync(artifactTypeId.Value,page,pageSize);
+                if (artifacts.Items == null || artifacts.TotalItems == 0)
                     return NotFound("Không có Artifact nào thuộc loại này.");
 
-                var dto = _mapper.Map<List<ArtifactDTO>>(artifacts);
+                var dto = _mapper.Map<List<ArtifactDTO>>(artifacts.Items);
                 return Ok(dto);
             }
 
             // 4. Lấy tất cả (có thể kèm chi tiết)
-            var all = await _artifactService.GetAllAsync();
-            if (all == null || all.Count == 0)
+            var all = await _artifactService.GetAllAsync(page,pageSize);
+            if (all.Items == null || all.TotalItems == 0)
                 return NotFound("Không tìm thấy artifact nào.");
 
             if (includeDetails)
             {
-                var dto = _mapper.Map<List<ArtifactDetailsDTO>>(all);
+                var dto = _mapper.Map<List<ArtifactDetailsDTO>>(all.Items);
                 return Ok(dto);
             }
             else
             {
-                var dto = _mapper.Map<List<ArtifactDTO>>(all);
+                var dto = _mapper.Map<List<ArtifactDTO>>(all.Items);
                 return Ok(dto);
             }
         }

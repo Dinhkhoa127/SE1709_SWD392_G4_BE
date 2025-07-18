@@ -15,12 +15,12 @@ namespace BiologyRecognition.Infrastructure
         public ArtifactMediaRepository() { }
         public ArtifactMediaRepository(SE1709_SWD392_G4_BiologyRecognitionSystemContext context) => _context = context;
 
-    
-        public async Task<List<ArtifactMedia>> GetListArtifactMediaByTypeAsync(string type)
+
+        public IQueryable<ArtifactMedia> GetListArtifactMediaByTypeAsync(string type)
         {
-            return await _context.ArtifactMedia.Include(c => c.Artifact)
-                .Where(u => u.Type.ToLower().Contains(type.ToLower()))
-                .ToListAsync();
+            return _context.ArtifactMedia
+                .Include(c => c.Artifact)
+                .Where(u => u.Type.ToLower().Contains(type.ToLower()));
         }
         public async Task<int> UpdateAsync(ArtifactMedia artifactMedia)
         {
@@ -33,23 +33,24 @@ namespace BiologyRecognition.Infrastructure
 
             return await _context.SaveChangesAsync();
         }
-        public async Task<List<ArtifactMedia>> GetAllAsync()
+        public IQueryable<ArtifactMedia> GetAllAsync()
         {
-            return await _context.ArtifactMedia.Include(c => c.Artifact).ToListAsync();
+            return _context.ArtifactMedia
+                 .Include(c => c.Artifact);
         }
 
-        public async Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactIdAsync(int id)
+        public  IQueryable<ArtifactMedia> GetListArtifactMediaByArtifactIdAsync(int id)
         {
-            return await _context.ArtifactMedia.Include(c => c.Artifact)
-                .Where(u => u.ArtifactId == id)
-            .ToListAsync();
+            return _context.ArtifactMedia
+                 .Include(c => c.Artifact)
+                .Where(u => u.ArtifactId == id);
         }
 
-        public async Task<List<ArtifactMedia>> GetListArtifactMediaByArtifactNameAsync(string name)
+        public IQueryable<ArtifactMedia> GetListArtifactMediaByArtifactNameAsync(string name)
         {
-            return await _context.ArtifactMedia.Include(c => c.Artifact)
-                .Where(u => u.Artifact.Name.ToLower().Contains(name.ToLower()))
-                .ToListAsync();
+            return _context.ArtifactMedia
+                .Include(c => c.Artifact)
+               .Where(u => u.Artifact.Name.ToLower().Contains(name.ToLower()));
         }
         public async Task<ArtifactMedia> GetByIdAsync(int id)
         {

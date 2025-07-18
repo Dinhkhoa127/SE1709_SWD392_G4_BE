@@ -1,5 +1,7 @@
-﻿using BiologyRecognition.Application.Interface;
+﻿using Azure;
+using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
+using BiologyRecognition.DTOs;
 using BiologyRecognition.DTOs.Article;
 using BiologyRecognition.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -24,14 +26,47 @@ namespace BiologyRecognition.Application.Implement
         }
 
 
-        public Task<List<Article>> GetAllAsync()
+        public async Task<PagedResult<Article>> GetAllAsync(int page, int pageSize)
         {
-            return _articleRepository.GetAllAsync();
+           var query = _articleRepository.GetAllAsync();
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(a => a.CreatedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Article>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
         }
 
-        public Task<List<Article>> GetArticlesByArtifactIdAsync(int artifactId)
+        public async Task<PagedResult<Article>> GetArticlesByArtifactIdAsync(int artifactId, int page, int pageSize)
         {
-            return _articleRepository.GetArticlesByArtifactIdAsync(artifactId);
+            var query = _articleRepository.GetArticlesByArtifactIdAsync(artifactId);
+
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(a => a.CreatedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Article>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
         }
 
         public Task<Article> GetByIdAsync(int id)
@@ -48,9 +83,40 @@ namespace BiologyRecognition.Application.Implement
             return _articleRepository.CreateWithArtifactsAsync(article, artifacts);
         }
 
-        public Task<List<Article>> GetListArticleByArtifactNameAsync(string name)
+        public async Task<PagedResult<Article>> GetListArticleByArtifactNameAsync(string name, int page, int pageSize)
         {
-            return _articleRepository.GetListArticleByArtifactNameAsync(name);
+            var query = _articleRepository.GetListArticleByArtifactNameAsync(name);
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(a => a.CreatedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Article>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+            };
+        }
+
+        public async Task<List<Article>> GetArticlesByArtifactIdAsync(int artifactId)
+        {
+            return await _articleRepository.GetArticlesByArtifactIdAsync(artifactId).ToListAsync();
+        }
+
+        public async Task<List<Article>> GetAllAsync()
+        {
+            return await _articleRepository.GetAllAsync().ToListAsync();
+        }
+
+        public async Task<List<Article>> GetListArticleByArtifactNameAsync(string name)
+        {
+            return await _articleRepository.GetListArticleByArtifactNameAsync(name).ToListAsync();
         }
     }
 }

@@ -31,22 +31,22 @@ namespace BiologyRecognition.Controller.Controllers
         [HttpGet("Notdetails")]
         public async Task<IActionResult> GetAllArticles()
         {
-            var list = await _articleService.GetAllAsync();
-            if (list == null || list.Count == 0)
-                return NotFound("Không có bài viết nào.");
+            //var list = await _articleService.GetAllAsync();
+            //if (list == null || list.Count == 0)
+            //    return NotFound("Không có bài viết nào.");
 
-            var dto = _mapper.Map<List<ArticleDTO>>(list);
-            return Ok(dto);
+            //var dto = _mapper.Map<List<ArticleDTO>>(list);
+            return Ok();
         }
         [HttpGet("details")]
         public async Task<IActionResult> GetAllArticlesDetails()
         {
-            var list = await _articleService.GetAllAsync();
-            if (list == null || list.Count == 0)
-                return NotFound("Không có bài viết nào.");
+            //var list = await _articleService.GetAllAsync();
+            //if (list == null || list.Count == 0)
+            //    return NotFound("Không có bài viết nào.");
 
-            var dto = _mapper.Map<List<ArticleDetailsDTO>>(list);
-            return Ok(dto);
+            //var dto = _mapper.Map<List<ArticleDetailsDTO>>(list);
+            return Ok();
         }
 
         [HttpGet("{id}")]
@@ -77,25 +77,25 @@ namespace BiologyRecognition.Controller.Controllers
             if (artifact == null)
                 return NotFound("Không tìm thấy mẫu tương ứng.");
 
-            var list = await _articleService.GetArticlesByArtifactIdAsync(artifactId);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có bài viết nào liên kết với mẫu này.");
+            //var list = await _articleService.GetArticlesByArtifactIdAsync(artifactId);
+            //if (list == null || list.Count == 0)
+            //    return NotFound("Không có bài viết nào liên kết với mẫu này.");
 
-            var dto = _mapper.Map<List<ArticleDTO>>(list);
-            return Ok(dto);
+            //var dto = _mapper.Map<List<ArticleDTO>>(list);
+            return Ok();
         }
         [HttpGet("by-artifactName/{artifactName}")]
         public async Task<IActionResult> GetArticlesByArtifactName(string? artifactName)
         {
-            if (string.IsNullOrWhiteSpace(artifactName))
-                return BadRequest("Tên mẫu không được để trống.");
+            //if (string.IsNullOrWhiteSpace(artifactName))
+            //    return BadRequest("Tên mẫu không được để trống.");
 
-            var list = await _articleService.GetListArticleByArtifactNameAsync(artifactName);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có bài viết nào liên kết với mẫu này.");
+            //var list = await _articleService.GetListArticleByArtifactNameAsync(artifactName);
+            //if (list == null || list.Count == 0)
+            //    return NotFound("Không có bài viết nào liên kết với mẫu này.");
 
-            var dto = _mapper.Map<List<ArticleDTO>>(list);
-            return Ok(dto);
+            //var dto = _mapper.Map<List<ArticleDTO>>(list);
+            return Ok();
         }
         [HttpGet("by-artifact-details/{artifactId}")]
         public async Task<IActionResult> GetArticleDetailsByArtifactId(int artifactId)
@@ -104,12 +104,12 @@ namespace BiologyRecognition.Controller.Controllers
             if (artifact == null)
                 return NotFound("Không tìm thấy mẫu tương ứng.");
 
-            var list = await _articleService.GetArticlesByArtifactIdAsync(artifactId);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có bài viết nào liên kết với mẫu này.");
+            //var list = await _articleService.GetArticlesByArtifactIdAsync(artifactId);
+            //if (list == null || list.Count == 0)
+            //    return NotFound("Không có bài viết nào liên kết với mẫu này.");
 
-            var dto = _mapper.Map<List<ArticleDetailsDTO>>(list);
-            return Ok(dto);
+            //var dto = _mapper.Map<List<ArticleDetailsDTO>>(list);
+            return Ok();
         }
 
         [HttpPost]
@@ -172,7 +172,9 @@ namespace BiologyRecognition.Controller.Controllers
     [FromQuery] int? id,
     [FromQuery] int? artifactId,
     [FromQuery] string? artifactName,
-    [FromQuery] bool includeDetails = false)
+    [FromQuery] bool includeDetails = false,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
         {
             // 1. Lấy theo ID
             if (id.HasValue)
@@ -200,18 +202,18 @@ namespace BiologyRecognition.Controller.Controllers
                 if (artifact == null)
                     return NotFound("Không tìm thấy mẫu tương ứng.");
 
-                var list = await _articleService.GetArticlesByArtifactIdAsync(artifactId.Value);
-                if (list == null || list.Count == 0)
+                var list = await _articleService.GetArticlesByArtifactIdAsync(artifactId.Value,page,pageSize);
+                if (list.Items == null || list.TotalItems == 0)
                     return NotFound("Không có bài viết nào liên kết với mẫu này.");
 
                 if (includeDetails)
                 {
-                    var dto = _mapper.Map<List<ArticleDetailsDTO>>(list);
+                    var dto = _mapper.Map<List<ArticleDetailsDTO>>(list.Items);
                     return Ok(dto);
                 }
                 else
                 {
-                    var dto = _mapper.Map<List<ArticleDTO>>(list);
+                    var dto = _mapper.Map<List<ArticleDTO>>(list.Items);
                     return Ok(dto);
                 }
             }
@@ -219,27 +221,27 @@ namespace BiologyRecognition.Controller.Controllers
             // 3. Lấy theo artifactName
             if (!string.IsNullOrWhiteSpace(artifactName))
             {
-                var list = await _articleService.GetListArticleByArtifactNameAsync(artifactName);
-                if (list == null || list.Count == 0)
+                var list = await _articleService.GetListArticleByArtifactNameAsync(artifactName,page,pageSize);
+                if (list.Items == null || list.TotalItems == 0)
                     return NotFound("Không có bài viết nào liên kết với mẫu này.");
 
-                var dto = _mapper.Map<List<ArticleDTO>>(list);
+                var dto = _mapper.Map<List<ArticleDTO>>(list.Items);
                 return Ok(dto);
             }
 
             // 4. Mặc định: lấy tất cả
-            var all = await _articleService.GetAllAsync();
-            if (all == null || all.Count == 0)
+            var all = await _articleService.GetAllAsync(page,pageSize);
+            if (all.Items == null || all.TotalItems == 0)
                 return NotFound("Không có bài viết nào.");
 
             if (includeDetails)
             {
-                var dto = _mapper.Map<List<ArticleDetailsDTO>>(all);
+                var dto = _mapper.Map<List<ArticleDetailsDTO>>(all.Items);
                 return Ok(dto);
             }
             else
             {
-                var dto = _mapper.Map<List<ArticleDTO>>(all);
+                var dto = _mapper.Map<List<ArticleDTO>>(all.Items);
                 return Ok(dto);
             }
         }

@@ -17,7 +17,7 @@ namespace BiologyRecognition.Controller.Controllers
         private readonly IArtifactService _artifactService;
         private readonly IMapper _mapper;
 
-        public ArtifactMediaController(IArtifactMediaService artifactMediaService,IArtifactService artifactService, IMapper mapper)
+        public ArtifactMediaController(IArtifactMediaService artifactMediaService, IArtifactService artifactService, IMapper mapper)
         {
             _artifactMediaService = artifactMediaService;
             _artifactService = artifactService;
@@ -27,12 +27,13 @@ namespace BiologyRecognition.Controller.Controllers
         [HttpGet(".")]
         public async Task<IActionResult> GetAllArtifactMedia()
         {
-            var list = await _artifactMediaService.GetAllAsync();
-            if (list == null || list.Count == 0)
-                return NotFound("Không tìm thấy ArtifactMedia nào.");
+            //var list = await _artifactMediaService.GetAllAsync();
+            //if (list == null || list.Count == 0)
+            //    return NotFound("Không tìm thấy ArtifactMedia nào.");
 
-            var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
-            return Ok(dto);
+            //var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
+            //return Ok(dto);
+            return Ok();
         }
 
         [HttpGet("{id}")]
@@ -49,40 +50,43 @@ namespace BiologyRecognition.Controller.Controllers
         [HttpGet("by-artifact/{artifactId}")]
         public async Task<IActionResult> GetArtifactMediaByArtifactId(int artifactId)
         {
-            var list = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(artifactId);
-            if (list == null || list.Count == 0)
-                return NotFound("Không tìm thấy media cho Artifact này.");
+            //var list = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(artifactId);
+            //if (list == null || list.Count == 0)
+            //    return NotFound("Không tìm thấy media cho Artifact này.");
 
-            var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
-            return Ok(dto);
+            //var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
+            //return Ok(dto);
+            return Ok();
         }
         [HttpGet("by-artifactName/{artifactName}")]
         public async Task<IActionResult> GetArtifactMediaByArtifactName(string? artifactName)
         {
-            if (string.IsNullOrWhiteSpace(artifactName))
-                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
-            var list = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(artifactName);
-            if (list == null || list.Count == 0)
-                return NotFound("Không tìm thấy media cho sinh vật này.");
+        //    if (string.IsNullOrWhiteSpace(artifactName))
+        //        return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
+        //    var list = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(artifactName);
+        //    if (list == null || list.Count == 0)
+        //        return NotFound("Không tìm thấy media cho sinh vật này.");
 
-            var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
-            return Ok(dto);
+        //    var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
+        //    return Ok(dto);
+             return Ok();
         }
         [HttpGet("by-type/{type}")]
         public async Task<IActionResult> GetByType(string type)
         {
-            var validTypes = new[] { "IMAGE", "VIDEO", "AUDIO", "DOCUMENT" };
-            if (!validTypes.Contains(type.ToUpper()))
-            {
-                return BadRequest(new { message = "Loại media phải là IMAGE, VIDEO, AUDIO hoặc DOCUMENT." });
-            }
+            //var validTypes = new[] { "IMAGE", "VIDEO", "AUDIO", "DOCUMENT" };
+            //if (!validTypes.Contains(type.ToUpper()))
+            //{
+            //    return BadRequest(new { message = "Loại media phải là IMAGE, VIDEO, AUDIO hoặc DOCUMENT." });
+            //}
 
-            var list = await _artifactMediaService.GetListArtifactMediaByTypeAsync(type.ToUpper());
-            if (list == null || list.Count == 0)
-                return NotFound("Không có media nào với kiểu này.");
+            //var list = await _artifactMediaService.GetListArtifactMediaByTypeAsync(type.ToUpper());
+            //if (list == null || list.Count == 0)
+            //    return NotFound("Không có media nào với kiểu này.");
 
-            var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
-            return Ok(dto);
+            //var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
+            //return Ok(dto);
+            return Ok();
         }
 
         [HttpPost]
@@ -121,7 +125,7 @@ namespace BiologyRecognition.Controller.Controllers
             if (existing == null)
                 return NotFound(new { message = "ArtifactMedia không tồn tại." });
 
-           
+
             _mapper.Map(mediaDto, existing);
             var result = await _artifactMediaService.UpdateAsync(existing);
 
@@ -149,7 +153,9 @@ namespace BiologyRecognition.Controller.Controllers
     [FromQuery] int? id,
     [FromQuery] int? artifactId,
     [FromQuery] string? artifactName,
-    [FromQuery] string? type)
+    [FromQuery] string? type,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
         {
             //  1. Ưu tiên tìm theo ID
             if (id.HasValue)
@@ -165,22 +171,22 @@ namespace BiologyRecognition.Controller.Controllers
             //  2. Theo artifactId
             if (artifactId.HasValue)
             {
-                var list = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(artifactId.Value);
-                if (list == null || list.Count == 0)
+                var list = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(artifactId.Value, page, pageSize);
+                if (list.Items == null || list.TotalItems == 0)
                     return NotFound("Không tìm thấy media cho Artifact này.");
 
-                var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
+                var dto = _mapper.Map<List<ArtifactMediaDTO>>(list.Items);
                 return Ok(dto);
             }
 
             //  3. Theo artifactName
             if (!string.IsNullOrWhiteSpace(artifactName))
             {
-                var list = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(artifactName);
-                if (list == null || list.Count == 0)
+                var list = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(artifactName, page, pageSize);
+                if (list.Items == null || list.TotalItems == 0)
                     return NotFound("Không tìm thấy media cho sinh vật này.");
 
-                var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
+                var dto = _mapper.Map<List<ArtifactMediaDTO>>(list.Items);
                 return Ok(dto);
             }
 
@@ -193,20 +199,20 @@ namespace BiologyRecognition.Controller.Controllers
                     return BadRequest(new { message = "Loại media phải là IMAGE, VIDEO, AUDIO hoặc DOCUMENT." });
                 }
 
-                var list = await _artifactMediaService.GetListArtifactMediaByTypeAsync(type.ToUpper());
-                if (list == null || list.Count == 0)
+                var list = await _artifactMediaService.GetListArtifactMediaByTypeAsync(type.ToUpper(),page,pageSize);
+                if (list.Items == null || list.TotalItems == 0)
                     return NotFound("Không có media nào với kiểu này.");
 
-                var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
+                var dto = _mapper.Map<List<ArtifactMediaDTO>>(list.Items);
                 return Ok(dto);
             }
 
-            // ✅ 5. Nếu không truyền gì → trả về tất cả
-            var all = await _artifactMediaService.GetAllAsync();
-            if (all == null || all.Count == 0)
+            // 5. Nếu không truyền gì → trả về tất cả
+            var all = await _artifactMediaService.GetAllAsync(page,pageSize);
+            if (all.Items == null || all.TotalItems == 0)
                 return NotFound("Không tìm thấy ArtifactMedia nào.");
 
-            var allDto = _mapper.Map<List<ArtifactMediaDTO>>(all);
+            var allDto = _mapper.Map<List<ArtifactMediaDTO>>(all.Items);
             return Ok(allDto);
         }
 
