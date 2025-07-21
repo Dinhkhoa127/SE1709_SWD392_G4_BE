@@ -130,43 +130,25 @@ namespace BiologyRecognition.Controller.Controllers
                         aiResultStr,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                     );
-
+                string message = "";
                 if (aiResult.Confidence < 0.5)
                 {
-                    var recogFailed = new Recognition();
-                    recogFailed.UserId = imageDTO.UserId;
-                    recogFailed.Artifact = null;
-                    recogFailed.ArtifactId = null;
-                    recogFailed.ImageUrl = imageDTO.ImageUrl;
-                    recogFailed.RecognizedAt = DateTime.Now;
-                    recogFailed.ConfidenceScore = aiResult.Confidence;
-                    recogFailed.AiResult = "Không nhận dạng được chính xác";
-                    recogFailed.Status = "FAILED";
-                    await _recognitionService.CreatAsync(recogFailed);
-                    return BadRequest(new { success = false, message = "Không nhận dạng được." });
+                    var recogFailed = await _recognitionService.CreateFailedRecognition(imageDTO, aiResult.Confidence);
+                    var result = await _recognitionService.CreatAsync(recogFailed);
+                    message = result > 0 ? "Lưu thành công recognition. Không nhận dạng được thực thể" : "Lưu recognition thất bại. Không nhận dạng được thực thể";
+                    return BadRequest(new { success = false, message });
                 }
 
 
                 // 3. Lưu kết quả nhận dạng Recognition vào cơ sở dữ liệu và xử lý query DB artifact detail ở đây
-                // ..... thầy nhân query theo yêu cầu của ae nha !!
                 var artifacts = await _artifactService.GetArtifactsByContainsNameAsync(aiResult.ArtifactName);
-                string message = "";
+                
                 if (artifacts != null && artifacts.Any())
                 {
                     var firstArtifact = artifacts.First(); 
-
-                    var recogSuccess = new Recognition
-                    {
-                        UserId = imageDTO.UserId,
-                        ArtifactId = firstArtifact.ArtifactId,
-                        ImageUrl = imageDTO.ImageUrl,
-                        RecognizedAt = DateTime.Now,
-                        ConfidenceScore = aiResult.Confidence,
-                        AiResult = aiResult.ArtifactName,
-                        Status = "COMPLETED"
-					};
+                    var recogSuccess =  await _recognitionService.CreateSuccessRecognition(imageDTO, firstArtifact, aiResult.Confidence);
                     var result = await _recognitionService.CreatAsync(recogSuccess);
-                    message = result > 0 ? "Lưu thành công recognition" : "Lưu recognition thất bại";
+                    message = result > 0 ? "Lưu thành công recognition. Đã nhận dạng được thực thể" : "Lưu recognition thất bại. Đã nhận dạng được thực thể";
                 }
                 // tạm thời trả về aiResult DTO
                 return Ok(new { success = true, artifact = aiResult , message } );

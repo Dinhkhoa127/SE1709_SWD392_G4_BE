@@ -132,7 +132,7 @@ builder.Services.AddScoped<IArtifactService , ArtifactService>();
 builder.Services.AddScoped<IArtifactMediaService, ArtifactMediaService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-
+builder.Services.AddHostedService<RecognitionCleanupService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperAccount));
 builder.Services.AddAutoMapper(typeof(AutoMapperSubject));
 builder.Services.AddAutoMapper(typeof(AutoMapperChapter));

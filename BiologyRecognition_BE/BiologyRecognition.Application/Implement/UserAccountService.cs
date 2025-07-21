@@ -53,6 +53,7 @@ namespace BiologyRecognition.Application.Implement
         }
         public async Task<int> CreateAccountByAdminAsync(UserAccount userAccount)
         {
+            userAccount.Password = BCrypt.Net.BCrypt.HashPassword(userAccount.Password);
             return await _repository.CreateAsync(userAccount);
         }
         public async Task<UserAccount> GetUserAccountByPhone(string phone)

@@ -1,5 +1,6 @@
 ﻿using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs;
+using BiologyRecognition.DTOs.Recognition;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ namespace BiologyRecognition.Application.Interface
         Task<List<Recognition>> GetRecognitionUserByIdAsync(int userId);
         Task<PagedResult<Recognition>> GetRecognitionUserByIdAsync(int userId, int page, int pageSize);
         Task<int> CreatAsync (Recognition recognition);
-
+        Task<int> DeleteExpiredRecognitionsAsync(CancellationToken cancellationToken = default);
+        Task<Recognition> CreateFailedRecognition(ImageDTO imageDTO, double confidence);
+        Task<Recognition> CreateSuccessRecognition(ImageDTO imageDTO, Artifact firstArtifact, double confidence);
     }
 }

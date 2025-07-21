@@ -31,5 +31,19 @@ namespace BiologyRecognition.Infrastructure
             return  _context.Recognitions.Include(r => r.Artifact)
                 .Where(r => r.UserId == userId);
         }
+        public async Task<int> DeleteExpiredRecognitionsAsync(CancellationToken cancellationToken = default)
+        {
+            var expiredRecognitions = await _context.Recognitions
+                .Where(r => r.RecognizedAt != null && r.RecognizedAt <= DateTime.Now.AddDays(-90))
+                .ToListAsync(cancellationToken);
+
+            if (expiredRecognitions.Any())
+            {
+                _context.Recognitions.RemoveRange(expiredRecognitions);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+
+            return expiredRecognitions.Count;
+        }
     }
 }

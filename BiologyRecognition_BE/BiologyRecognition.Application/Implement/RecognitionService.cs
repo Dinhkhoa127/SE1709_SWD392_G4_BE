@@ -1,6 +1,7 @@
 ﻿using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs;
+using BiologyRecognition.DTOs.Recognition;
 using BiologyRecognition.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,6 +22,11 @@ namespace BiologyRecognition.Application.Implement
             return _repository.CreateAsync(recognition);
         }
 
+        public async Task<int> DeleteExpiredRecognitionsAsync(CancellationToken cancellationToken = default)
+        {
+            return await _repository.DeleteExpiredRecognitionsAsync(cancellationToken);
+        }
+
         public Task<List<Recognition>> GetAllAsync()
         {
             return _repository.GetAllAsync().ToListAsync();
@@ -32,6 +38,7 @@ namespace BiologyRecognition.Application.Implement
             var totalItems = await query.CountAsync();
 
             var items = await query
+                .OrderByDescending(c => c.RecognizedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -53,7 +60,7 @@ namespace BiologyRecognition.Application.Implement
 
         public Task<List<Recognition>> GetRecognitionUserByIdAsync(int userId)
         {
-            return _repository.GetRecognitionUserByIdAsync(userId).ToListAsync();
+            return _repository.GetRecognitionUserByIdAsync(userId).OrderByDescending(c => c.RecognizedAt).ToListAsync();
         }
 
         public async Task<PagedResult<Recognition>> GetRecognitionUserByIdAsync(int userId, int page, int pageSize)
@@ -62,6 +69,7 @@ namespace BiologyRecognition.Application.Implement
             var totalItems = await query.CountAsync();
 
             var items = await query
+                .OrderByDescending(c => c.RecognizedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -74,6 +82,37 @@ namespace BiologyRecognition.Application.Implement
                 PageSize = pageSize,
                 TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
             };
+        }
+
+        public async Task<Recognition> CreateFailedRecognition(ImageDTO imageDTO, double confidence)
+        {
+            var recognition = new Recognition
+            {
+                UserId = imageDTO.UserId,
+                Artifact = null,
+                ArtifactId = null,
+                ImageUrl = imageDTO.ImageUrl,
+                RecognizedAt = DateTime.Now,
+                ConfidenceScore = confidence,
+                AiResult = "Không nhận dạng được chính xác",
+                Status = "FAILED"
+            };
+            return await Task.FromResult(recognition);
+        }
+
+        public async Task<Recognition> CreateSuccessRecognition(ImageDTO imageDTO, Artifact firstArtifact, double confidence)
+        {
+            var recognition = new Recognition
+            {
+                UserId = imageDTO.UserId,
+                ArtifactId = firstArtifact.ArtifactId,
+                ImageUrl = imageDTO.ImageUrl,
+                RecognizedAt = DateTime.Now,
+                ConfidenceScore = confidence,
+                AiResult = firstArtifact.Name,
+                Status = "COMPLETED"
+            };
+            return await Task.FromResult(recognition);
         }
     }
 }
