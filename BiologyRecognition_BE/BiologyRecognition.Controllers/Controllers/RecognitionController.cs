@@ -9,11 +9,13 @@ using Microsoft.SqlServer.Server;
 using System.Net.Http;
 using System.Text.Json;
 using BiologyRecognition.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BiologyRecognition.Controller.Controllers
 {
     [Route("api/recognition")]
     [ApiController]
+    [Authorize]
     public class RecognitionController : ControllerBase
     {
 
@@ -39,46 +41,8 @@ namespace BiologyRecognition.Controller.Controllers
             _artifactService = artifactService;
         }
 
-
-        [HttpGet(".")]
-        public async Task<IActionResult> GetAllRecognitions()
-        {
-            var recognitions = await _recognitionService.GetAllAsync();
-            if (recognitions == null || recognitions.Count == 0)
-                return NotFound("Không tìm thấy recognition nào.");
-
-            var dto = _mapper.Map<List<RecognitionDTO>>(recognitions);
-            return Ok(dto);
-        }
-
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetRecognitionById(int id)
-        {
-            var recognition = await _recognitionService.GetByIdAsync(id);
-            if (recognition == null || recognition.RecognitionId == 0)
-                return NotFound("Không tìm thấy lịch sử tồn tại.");
-
-            var dto = _mapper.Map<RecognitionDTO>(recognition);
-            return Ok(dto);
-        }
-
-
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetRecognitionsByUserId(int userId)
-        {
-            var account = await _accountService.GetUserAccountByIdAsync(userId);
-            if (account == null)
-                return NotFound(new { message = "Không tìm thấy người này trong hệ thống." });
-            var recognitions = await _recognitionService.GetRecognitionUserByIdAsync(userId);
-            if (recognitions == null || recognitions.Count == 0)
-                return NotFound("Người dùng này chưa có lịch sử nào.");
-
-            var dto = _mapper.Map<List<RecognitionDTO>>(recognitions);
-            return Ok(dto);
-        }
-
         [HttpPost("recognize")]
+        [Authorize(Roles = "2")]
         public async Task<IActionResult> Recognize([FromBody] ImageDTO imageDTO)
         {
             try
@@ -159,6 +123,7 @@ namespace BiologyRecognition.Controller.Controllers
             }
         }
         [HttpGet]
+        [Authorize(Roles = "2,3")]
         public async Task<IActionResult> GetRecognitions(
     [FromQuery] int? id,
     [FromQuery] int? userId,
@@ -201,6 +166,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> Delete(int id)
         {
             var recognition = await _recognitionService.GetByIdAsync(id);

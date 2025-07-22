@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -108,6 +109,20 @@ builder.Services.AddAuthentication(options =>
                 message = "Unauthorized: Token is missing or invalid"
             });
             return context.Response.WriteAsync(result);
+        },
+        OnForbidden = context =>
+        {
+            
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            context.Response.ContentType = "application/json";
+
+            var result = JsonSerializer.Serialize(new
+            {
+                status = 403,
+                message = "Forbidden: You don’t have permission to access this resource."
+            });
+
+            return context.Response.WriteAsync(result);
         }
     };
 })
@@ -164,8 +179,8 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseCors("AllowReactApp"); // Phải use CORS trước Authentication và Authorization
 app.UseAuthentication();
+app.UseMiddleware<ActiveUserMiddleware>();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

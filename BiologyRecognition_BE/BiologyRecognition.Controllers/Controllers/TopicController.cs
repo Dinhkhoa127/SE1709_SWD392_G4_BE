@@ -3,6 +3,7 @@ using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.Chapter;
 using BiologyRecognition.DTOs.Topic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace BiologyRecognition.Controller.Controllers
 {
     [ApiController]
     [Route("api/topic")]
+    [Authorize]
     public class TopicController : ControllerBase
     {
         private readonly ITopicService _topicService;
@@ -25,74 +27,8 @@ namespace BiologyRecognition.Controller.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet(".")]
-        public async Task<IActionResult> GetAllTopics()
-        {
-            var topics = await _topicService.GetAllAsync();
-            if (topics == null || topics.Count == 0)
-                return NotFound("Không tìm thấy chủ đề nào.");
-
-            var dto = _mapper.Map<List<TopicDTO>>(topics);
-            return Ok(dto);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetTopicById(int id)
-        {
-            var topic = await _topicService.GetByIdAsync(id);
-            if (topic == null)
-                return NotFound("Chủ đề không tồn tại.");
-
-            var dto = _mapper.Map<TopicDTO>(topic);
-            return Ok(dto);
-        }
-
-        [HttpGet("filter-name")]
-        public async Task<IActionResult> GetTopicsByContainName([FromQuery] string? name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
-            var list = await _topicService.GetListTopicsByContainNameAsync(name);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có chủ đề phù hợp với từ khóa tìm kiếm.");
-
-            var dto = _mapper.Map<List<TopicDTO>>(list);
-            return Ok(dto);
-        }
-        [HttpGet("by-artifactName/{artifactName}")]
-        public async Task<IActionResult> GetTopicsByArtifactName(string? artifactName)
-        {
-            if (string.IsNullOrWhiteSpace(artifactName))
-                return BadRequest(new { message = "Tên đối tượng không được để trống." });
-
-            var topics = await _topicService.GetListTopicsByArtifactNameAsync(artifactName);
-
-            if (topics == null || topics.Count == 0)
-                return NotFound("Không có chủ đề nào phù hợp với tên đối tượng.");
-
-            var dto = topics.Select(topic =>
-    _mapper.Map<TopicArtifactChapterDTO>(topic, opt =>
-    {
-        opt.Items["artifactName"] = artifactName.ToLower();
-    })
-).ToList();
-
-            return Ok(dto);
-        }
-
-        [HttpGet("by-chapter/{chapterId}")]
-        public async Task<IActionResult> GetTopicsByChapterId(int chapterId)
-        {
-            var topics = await _topicService.GetListTopicsByChapterIdAsync(chapterId);
-
-            if (topics == null || topics.Count == 0)
-                return NotFound("Không có nội dung nào trong bài này.");
-
-            var dto = _mapper.Map<List<TopicDTO>>(topics);
-            return Ok(dto);
-        }
-
         [HttpPost]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
             if (!ModelState.IsValid)
@@ -118,6 +54,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> UpdateTopic([FromBody] UpdateTopicDTO topicDto)
         {
             if (!ModelState.IsValid)
@@ -147,6 +84,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "2,3")]
         public async Task<IActionResult> GetTopics(
     [FromQuery] int? id,
     [FromQuery] string? name,
@@ -216,6 +154,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> Delete(int id)
         {
             var topic = await _topicService.GetByIdAsync(id);

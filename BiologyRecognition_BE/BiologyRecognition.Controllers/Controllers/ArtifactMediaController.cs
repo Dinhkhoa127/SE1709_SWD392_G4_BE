@@ -3,6 +3,7 @@ using BiologyRecognition.Application.Implement;
 using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.ArtifactMedia;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace BiologyRecognition.Controller.Controllers
 {
     [Route("api/artifactMedia")]
     [ApiController]
+    [Authorize]
     public class ArtifactMediaController : ControllerBase
     {
 
@@ -23,73 +25,8 @@ namespace BiologyRecognition.Controller.Controllers
             _artifactService = artifactService;
             _mapper = mapper;
         }
-
-        [HttpGet(".")]
-        public async Task<IActionResult> GetAllArtifactMedia()
-        {
-            //var list = await _artifactMediaService.GetAllAsync();
-            //if (list == null || list.Count == 0)
-            //    return NotFound("Không tìm thấy ArtifactMedia nào.");
-
-            //var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
-            //return Ok(dto);
-            return Ok();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetArtifactMediaById(int id)
-        {
-            var media = await _artifactMediaService.GetByIdAsync(id);
-            if (media == null)
-                return NotFound("ArtifactMedia không tồn tại.");
-
-            var dto = _mapper.Map<ArtifactMediaDTO>(media);
-            return Ok(dto);
-        }
-
-        [HttpGet("by-artifact/{artifactId}")]
-        public async Task<IActionResult> GetArtifactMediaByArtifactId(int artifactId)
-        {
-            //var list = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(artifactId);
-            //if (list == null || list.Count == 0)
-            //    return NotFound("Không tìm thấy media cho Artifact này.");
-
-            //var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
-            //return Ok(dto);
-            return Ok();
-        }
-        [HttpGet("by-artifactName/{artifactName}")]
-        public async Task<IActionResult> GetArtifactMediaByArtifactName(string? artifactName)
-        {
-        //    if (string.IsNullOrWhiteSpace(artifactName))
-        //        return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
-        //    var list = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(artifactName);
-        //    if (list == null || list.Count == 0)
-        //        return NotFound("Không tìm thấy media cho sinh vật này.");
-
-        //    var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
-        //    return Ok(dto);
-             return Ok();
-        }
-        [HttpGet("by-type/{type}")]
-        public async Task<IActionResult> GetByType(string type)
-        {
-            //var validTypes = new[] { "IMAGE", "VIDEO", "AUDIO", "DOCUMENT" };
-            //if (!validTypes.Contains(type.ToUpper()))
-            //{
-            //    return BadRequest(new { message = "Loại media phải là IMAGE, VIDEO, AUDIO hoặc DOCUMENT." });
-            //}
-
-            //var list = await _artifactMediaService.GetListArtifactMediaByTypeAsync(type.ToUpper());
-            //if (list == null || list.Count == 0)
-            //    return NotFound("Không có media nào với kiểu này.");
-
-            //var dto = _mapper.Map<List<ArtifactMediaDTO>>(list);
-            //return Ok(dto);
-            return Ok();
-        }
-
         [HttpPost]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> Create([FromBody] CreateArtifactMediaDTO mediaDto)
         {
             if (!ModelState.IsValid)
@@ -113,6 +50,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> Update([FromBody] UpdateArtifactMediaDTO mediaDto)
         {
             if (!ModelState.IsValid)
@@ -135,6 +73,7 @@ namespace BiologyRecognition.Controller.Controllers
             return BadRequest(new { message = "Cập nhật ArtifactMedia thất bại." });
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> DeleteArtifactMedia(int id)
         {
             var media = await _artifactMediaService.GetByIdAsync(id);
@@ -149,6 +88,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "2,3")]
         public async Task<IActionResult> GetArtifactMedia(
     [FromQuery] int? id,
     [FromQuery] int? artifactId,

@@ -58,6 +58,7 @@ namespace BiologyRecognition.Application.Implement
             var totalItems = await query.CountAsync();
 
             var items = await query
+                .OrderByDescending(c => c.CreatedDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -78,6 +79,7 @@ namespace BiologyRecognition.Application.Implement
             var totalItems = await query.CountAsync();
 
             var items = await query
+                .OrderByDescending(c => c.CreatedDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -98,6 +100,7 @@ namespace BiologyRecognition.Application.Implement
             var totalItems = await query.CountAsync();
 
             var items = await query
+                .OrderByDescending(c => c.CreatedDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -118,6 +121,7 @@ namespace BiologyRecognition.Application.Implement
             var totalItems = await query.CountAsync();
 
             var items = await query
+                .OrderByDescending(c => c.CreatedDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -130,6 +134,10 @@ namespace BiologyRecognition.Application.Implement
                 PageSize = pageSize,
                 TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
             };
+        }
+        public async Task<Artifact> GetByArtifactCodeAsync(string artifactCode)
+        {
+            return await _artifactRepository.GetByArtifactCodeAsync(artifactCode);
         }
     }
 }

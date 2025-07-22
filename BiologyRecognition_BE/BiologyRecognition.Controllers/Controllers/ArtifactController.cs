@@ -5,6 +5,7 @@ using BiologyRecognition.DTOs.Article;
 using BiologyRecognition.DTOs.Artifact;
 using BiologyRecognition.DTOs.ArtifactMedia;
 using BiologyRecognition.DTOs.ArtifactType;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace BiologyRecognition.Controller.Controllers
 {
     [Route("api/artifact")]
     [ApiController]
+    [Authorize]
     public class ArtifactController : ControllerBase
     {
         private readonly IArtifactService _artifactService;
@@ -30,119 +32,10 @@ namespace BiologyRecognition.Controller.Controllers
             _artifactMediaService = artifactMediaService;
             _articleService = articleService;
         }
-        [HttpGet(".")]
-        public async Task<IActionResult> GetAllArtifacts()
-        {
-            var artifacts = await _artifactService.GetAllAsync();
-            if (artifacts == null || artifacts.Count == 0)
-                return NotFound("Không tìm thấy artifact nào.");
-
-            var dto = _mapper.Map<List<ArtifactDTO>>(artifacts);
-            return Ok(dto);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetArtifactById(int id)
-        {
-            var artifact = await _artifactService.GetByIdAsync(id);
-            if (artifact == null)
-                return NotFound("Artifact không tồn tại.");
-
-            var dto = _mapper.Map<ArtifactDTO>(artifact);
-            return Ok(dto);
-        }
-        [HttpGet("by-id/{id}/with-media-article")]
-        public async Task<IActionResult> GetMediaArticleById(int id)
-        {
-            var artifact = await _artifactService.GetByIdAsync(id);
-            if (artifact == null)
-                return NotFound("Artifact không tồn tại.");
-
-            //var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactIdAsync(id);
-            //var articleList = await _articleService.GetArticlesByArtifactIdAsync(id);
-            //var artifactDto = _mapper.Map<ArtifactWithMediaArticleDTO>(artifact);
-            //artifactDto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(mediaList);
-            //artifactDto.ArticleList = _mapper.Map<List<ArticleDTO>>(articleList);
-            return Ok();
-        }
-
-        [HttpGet("by-name/{name}/with-media-article")]
-        public async Task<IActionResult> GetMediaArticleByArtifactName(string? name)
-        {
-            //if (string.IsNullOrWhiteSpace(name))
-            //    return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });   
-            //var artifact = await _artifactService.GetArtifactsByContainsNameAsync(name);
-            //if (artifact == null || artifact.Count == 0)
-            //    return NotFound("Không tìm thấy artifact nào.");
-
-            //var mediaList = await _artifactMediaService.GetListArtifactMediaByArtifactNameAsync(name);
-            //var articleList = await _articleService.GetListArticleByArtifactNameAsync(name);
-            //var artifactDtos = _mapper.Map<List<ArtifactWithMediaArticleDTO>>(artifact);
-
-            //// Gán MediaList và ArticleList vào từng artifact
-            //foreach (var dto in artifactDtos)
-            //{
-            //    dto.MediaList = _mapper.Map<List<ArtifactMediaDTO>>(
-            //        mediaList.Where(m => m.ArtifactId == dto.ArtifactId).ToList());
-
-            //    dto.ArticleList = _mapper.Map<List<ArticleDTO>>(
-            //        articleList.Where(article =>
-            //            article.Artifacts.Any(artifact => artifact.ArtifactId == dto.ArtifactId)
-            //        ).ToList());
-            //}
-
-            //return Ok(artifactDtos);
-            return Ok();
-        }
-
-        [HttpGet("all-detail")]
-        public async Task<IActionResult> GetAllArtifactsDetails()
-        {
-            var artifacts = await _artifactService.GetAllAsync();
-            if (artifacts == null || artifacts.Count == 0)
-                return NotFound("Không tìm thấy artifact nào.");
-
-            var dto = _mapper.Map<List<ArtifactDetailsDTO>>(artifacts);
-            return Ok(dto);
-        }
-
-        [HttpGet("detail/{id}")]
-        public async Task<IActionResult> GetArtifactDetailsById(int id)
-        {
-            var artifact = await _artifactService.GetByIdAsync(id);
-            if (artifact == null)
-                return NotFound("Artifact không tồn tại.");
-
-            var dto = _mapper.Map<ArtifactDetailsDTO>(artifact);
-            return Ok(dto);
-        }
-
-        [HttpGet("filter-name")]
-        public async Task<IActionResult> GetArtifactsByContainName([FromQuery] string? name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
-
-            var list = await _artifactService.GetArtifactsByContainsNameAsync(name);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có Artifact phù hợp với từ khóa tìm kiếm.");
-
-            var dto = _mapper.Map<List<ArtifactDTO>>(list);
-            return Ok(dto);
-        }
-
-        [HttpGet("by-artifact-type/{artifactTypeId}")]
-        public async Task<IActionResult> GetArtifactsByArtifactTypeId(int artifactTypeId)
-        {
-            var artifacts = await _artifactService.GetListArtifactsByArtifactTypeIdAsync(artifactTypeId);
-            if (artifacts == null || artifacts.Count == 0)
-                return NotFound("Không có Artifact nào thuộc loại này.");
-
-            var dto = _mapper.Map<List<ArtifactDTO>>(artifacts);
-            return Ok(dto);
-        }
+       
 
         [HttpPost]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> CreateArtifact([FromBody] CreateArtifactDTO artifactDto)
         {
             if (!ModelState.IsValid)
@@ -155,6 +48,11 @@ namespace BiologyRecognition.Controller.Controllers
             if (artifactType == null)
                 return NotFound(new { message = "Không tìm thấy loại mẫu ArtifactType." });
 
+            var existingArtifact = await _artifactService.GetByArtifactCodeAsync(artifactDto.ArtifactCode);
+            if (existingArtifact != null)
+            {
+                return Conflict(new { message = "Mã mẫu ArtifactCode đã tồn tại, vui lòng chọn mã khác." });
+            }
 
             var account = await _accountService.GetUserAccountByIdAsync(artifactDto.CreatedBy);
             if (account == null)
@@ -169,6 +67,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> UpdateArtifact([FromBody] UpdateArtifactDTO artifactDto)
         {
             if (!ModelState.IsValid)
@@ -176,7 +75,11 @@ namespace BiologyRecognition.Controller.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return BadRequest(new { message = errors });
             }
-
+            var existingArtifact = await _artifactService.GetByArtifactCodeAsync(artifactDto.ArtifactCode);
+            if (existingArtifact != null)
+            {
+                return Conflict(new { message = "Mã mẫu ArtifactCode đã tồn tại, vui lòng chọn mã khác." });
+            }
             var artifactType = await _artifactTypeService.GetByIdAsync(artifactDto.ArtifactTypeId);
             if (artifactType == null)
                 return NotFound(new { message = "Không tìm thấy loại mẫu ArtifactType này." });
@@ -198,6 +101,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "2,3")]
         public async Task<IActionResult> GetArtifacts(
     [FromQuery] int? id,
     [FromQuery] string? name,
@@ -303,6 +207,7 @@ namespace BiologyRecognition.Controller.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> Delete(int id)
         {
             var artifact = await _artifactService.GetByIdAsync(id);

@@ -41,10 +41,15 @@ namespace BiologyRecognition.Application.Implement
                 {
                     throw new ArgumentException("Invalid username or email.");
                 }
+                if (!account.IsActive)
+                {
+                    throw new ArgumentException("Your Account has been banned!!");
+                }
                 var isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDTO.Password, account.Password);
                 if (!isPasswordValid)
                 {
                     throw new ArgumentException("Invalid password.");
+
                 }
                 var accountResponse = _mapper.Map<AccountResponseDTO>(account);
                 accountResponse.AccessToken = await GenerateToken(accountResponse);

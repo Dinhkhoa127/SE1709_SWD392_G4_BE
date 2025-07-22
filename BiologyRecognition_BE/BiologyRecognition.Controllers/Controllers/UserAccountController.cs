@@ -15,6 +15,7 @@ namespace BiologyRecognition.Controllers.Controllers
 {
     [Route("api/user-accounts")]
     [ApiController]
+    [Authorize]
     public class UserAccountController : ControllerBase
     {
         private readonly IUserAccountService _accountService;
@@ -32,6 +33,7 @@ namespace BiologyRecognition.Controllers.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> GetAccounts([FromQuery] int? id, [FromQuery] int page = 1,
     [FromQuery] int pageSize = 3)
         {
@@ -53,8 +55,8 @@ namespace BiologyRecognition.Controllers.Controllers
             return Ok(dtoList);
         }
 
-        [HttpPost("admin")]
-
+        [HttpPost]
+        [Authorize(Roles ="1")]
         public async Task<IActionResult> CreateAccountByAdmin([FromBody] CreateAccountDTO createAccountDto)
         {
             if (!ModelState.IsValid)
@@ -92,8 +94,8 @@ namespace BiologyRecognition.Controllers.Controllers
         }
 
 
-        [HttpPut("student/update-info")]
-        [Authorize]
+        [HttpPut("me/info")]
+        [Authorize(Roles = "2,3")]
 
         public async Task<IActionResult> UpdateAccountInfo([FromBody] UpdateAccountStudentNoPwDTO dto)
         {
@@ -102,7 +104,11 @@ namespace BiologyRecognition.Controllers.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return BadRequest(new { message = errors });
             }
-
+            var currentUserIdClaim = User.FindFirst("Id")?.Value;
+            if (string.IsNullOrEmpty(currentUserIdClaim) || dto.UserAccountId.ToString() != currentUserIdClaim)
+            {
+                return Unauthorized(new { message = "You are not allowed to update another account's password." });
+            }
             dto.Email = dto.Email?.Trim();
             dto.Phone = dto.Phone?.Trim();
 
@@ -126,8 +132,8 @@ namespace BiologyRecognition.Controllers.Controllers
             return BadRequest(new { message = "Cập nhật thất bại" });
         }
 
-        [HttpPut("student/update-password")]
-        [Authorize]
+        [HttpPut("me/password")]
+        [Authorize(Roles = "2,3")]
 
         public async Task<IActionResult> UpdateStudentPassword([FromBody] UpdateAccountStudentPwDTO dto)
         {
@@ -136,7 +142,12 @@ namespace BiologyRecognition.Controllers.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return BadRequest(new { message = errors });
             }
+            var currentUserIdClaim = User.FindFirst("Id")?.Value;
 
+            if (string.IsNullOrEmpty(currentUserIdClaim) || dto.UserAccountId.ToString() != currentUserIdClaim)
+            {
+                return Unauthorized(new { message = "You are not allowed to update another account's password." });
+            }
             var user = await _accountService.GetUserAccountByIdAsync(dto.UserAccountId);
             if (user == null)
                 return NotFound(new { message = "Không tìm thấy tài khoản" });
@@ -153,7 +164,7 @@ namespace BiologyRecognition.Controllers.Controllers
 
 
         [HttpPut("admin")]
-        [Authorize]
+        [Authorize(Roles = "1")]
 
         public async Task<IActionResult> UpdateAccountByAdmin([FromBody] UpdateAccountAdminDTO updateAccountAdmin)
         {
@@ -190,87 +201,10 @@ namespace BiologyRecognition.Controllers.Controllers
             return BadRequest(new { message = "Cập nhật thất bại" });
         }
 
-        [HttpPost("send-otp/{email}")]
-        public async Task<IActionResult> SendOtp(string? email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-                return BadRequest(new { message = "Email không được để trống." });
-
-            var user = await _accountService.GetUserAccountByNameOrEmailAsync(email);
-
-            // Trả lời chung dù email không tồn tại (chống dò)
-            if (user == null)
-                return Ok("Nếu email tồn tại, mã OTP đã được gửi.");
-
-            // Nếu đã có OTP chưa hết hạn thì không cho gửi tiếp
-            if (!string.IsNullOrEmpty(user.OtpCode) && user.OtpExpiry > DateTime.Now)
-                return BadRequest("Bạn đã yêu cầu mã OTP gần đây. Vui lòng đợi vài phút.");
-
-            var otp = new Random().Next(100000, 999999).ToString();
-
-            // Mã hóa OTP trước khi lưu (optional nhưng nên)
-            user.OtpCode = BCrypt.Net.BCrypt.HashPassword(otp);
-            user.OtpExpiry = DateTime.Now.AddMinutes(5); // OTP có hạn 5 phút
-
-            await _accountService.UpdateAsync(user);
-
-            var body = $@"
-        <p>Chào {user.FullName},</p>
-        <p>Mã OTP để đặt lại mật khẩu là: <b>{otp}</b></p>
-        <p>Mã này có hiệu lực trong 5 phút.</p>";
-
-            await _emailService.SendEmailAsync(user.Email, "[BRS] Mã OTP đặt lại mật khẩu", body);
-
-            return Ok("Nếu email tồn tại, mã OTP đã được gửi.");
-        }
-
-        [HttpPost("verify-otp")]
-        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest req)
-        {
-            if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.OtpCode))
-                return BadRequest("Email và mã OTP không được để trống.");
-
-            var user = await _accountService.GetUserAccountByNameOrEmailAsync(req.Email);
-            if (user == null || string.IsNullOrEmpty(user.OtpCode) || user.OtpExpiry < DateTime.Now)
-                return BadRequest("Mã OTP không đúng hoặc đã hết hạn.");
-
-            // So sánh OTP đã mã hóa
-            if (!BCrypt.Net.BCrypt.Verify(req.OtpCode.Trim(), user.OtpCode))
-                return BadRequest("Mã OTP không đúng.");
-
-            return Ok("Xác minh thành công.");
-        }
-
-        [HttpPost("reset-password-with-otp")]
-        public async Task<IActionResult> ResetPasswordWithOtp([FromBody] ResetByOtpRequest req)
-        {
-            if (string.IsNullOrWhiteSpace(req.Email) ||
-                string.IsNullOrWhiteSpace(req.OtpCode) ||
-                string.IsNullOrWhiteSpace(req.NewPassword))
-            {
-                return BadRequest("Vui lòng nhập đầy đủ thông tin.");
-            }
-
-            var user = await _accountService.GetUserAccountByNameOrEmailAsync(req.Email);
-
-            if (user == null || string.IsNullOrEmpty(user.OtpCode) || user.OtpExpiry < DateTime.Now)
-                return BadRequest("Mã OTP không đúng hoặc đã hết hạn.");
-
-            if (!BCrypt.Net.BCrypt.Verify(req.OtpCode.Trim(), user.OtpCode))
-                return BadRequest("Mã OTP không đúng.");
-
-            user.Password = BCrypt.Net.BCrypt.HashPassword(req.NewPassword);
-            user.OtpCode = null;
-            user.OtpExpiry = null;
-            user.ModifiedDate = DateTime.Now;
-
-            await _accountService.UpdateAsync(user);
-
-
-            return Ok("Mật khẩu đã được đặt lại.");
-        }
+       
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> Delete(int id)
         {
             var account = await _accountService.GetUserAccountByIdAsync(id);

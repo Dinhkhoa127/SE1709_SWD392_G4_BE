@@ -21,5 +21,6 @@ namespace BiologyRecognition.Application.Interface
         Task<PagedResult<Artifact>> GetListArtifactsByArtifactTypeIdAsync(int id, int page, int pageSize);
         Task<List<Artifact>> GetListArtifactsByListIdsAsync(List<int> artifactIds);
         Task<PagedResult<Artifact>> GetListArtifactsByListIdsAsync(List<int> artifactIds, int page, int pageSize);
+        Task<Artifact> GetByArtifactCodeAsync(string artifactCode);
     }
 }

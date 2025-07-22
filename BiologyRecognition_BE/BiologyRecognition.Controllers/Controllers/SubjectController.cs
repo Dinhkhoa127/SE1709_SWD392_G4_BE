@@ -3,12 +3,14 @@ using BiologyRecognition.Application.Implement;
 using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.Subject;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BiologyRecognition.Controller.Controllers
 {
     [ApiController]
     [Route("api/subject")]
+    [Authorize]
     public class SubjectController : ControllerBase
     {
         private readonly IUserAccountService _accountService;
@@ -25,44 +27,8 @@ namespace BiologyRecognition.Controller.Controllers
             _subjectService = subjectService;
         }
 
-        [HttpGet(".")]
-        public async Task<IActionResult> GetAllSubjects()
-        {
-            var subjects = await _subjectService.GetAllAsync();
-            if (subjects == null || subjects.Count == 0)
-            {
-                return NotFound("Không tìm thấy môn học nào.");
-            }
-            var dto = _mapper.Map<List<SubjectDTO>>(subjects);
-            return Ok(dto);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetSubjectById(int id)
-        {
-            var subject = await _subjectService.GetSubjectByIdAsync(id);
-            if (subject == null)
-                return NotFound("Môn học không tồn tại.");
-
-            var dto = _mapper.Map<SubjectDTO>(subject);
-            return Ok(dto);
-        }
-
-     
-        [HttpGet("filter-name")]
-        public async Task<IActionResult> GetSubjectsByContainName([FromQuery] string? name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
-            var list = await _subjectService.GetListSubjectByContainNameAsync(name);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có môn học phù hợp với từ khóa tìm kiếm.");
-
-            var dto = _mapper.Map<List<SubjectDTO>>(list);
-            return Ok(dto);
-        }
-
         [HttpPost]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> CreateSubject([FromBody] CreateSubjectDTO subjectDto)
         {
             if (!ModelState.IsValid)
@@ -82,6 +48,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> UpdateSubject([FromBody] UpdateSubjectDTO subjectDto)
         {
             if (!ModelState.IsValid)
@@ -108,6 +75,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "2,3")]
         public async Task<IActionResult> GetSubjects(
     [FromQuery] int? id,
     [FromQuery] string? name,
@@ -146,6 +114,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> Delete(int id)
         {
 

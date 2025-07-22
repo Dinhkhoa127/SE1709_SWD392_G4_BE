@@ -53,5 +53,10 @@ namespace BiologyRecognition.Infrastructure
             return  _context.Artifacts
                 .Where(a => artifactIds.Contains(a.ArtifactId));
         }
+        public async Task<Artifact> GetByArtifactCodeAsync(string artifactCode)
+        {
+            return await _context.Artifacts.Include(c => c.CreatedByNavigation)
+                .Include(c => c.ModifiedByNavigation).Include(c => c.ArtifactType).ThenInclude(at => at.Topic).FirstOrDefaultAsync(h => h.ArtifactCode == artifactCode);
+        }
     }
 }

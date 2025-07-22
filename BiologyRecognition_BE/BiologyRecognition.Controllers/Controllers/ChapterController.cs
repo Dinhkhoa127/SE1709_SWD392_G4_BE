@@ -4,12 +4,14 @@ using BiologyRecognition.Application.Interface;
 using BiologyRecognition.Domain.Entities;
 using BiologyRecognition.DTOs.Chapter;
 using BiologyRecognition.DTOs.Topic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BiologyRecognition.Controller.Controllers
 {
     [ApiController]
     [Route("api/chapter")]
+    [Authorize]
     public class ChapterController : ControllerBase
     {
 
@@ -27,55 +29,9 @@ namespace BiologyRecognition.Controller.Controllers
             _chapterService = chapterService;
         }
 
-        [HttpGet(".")]
-        public async Task<IActionResult> GetAllChapters()
-        {
-            var chapters = await _chapterService.GetAllAsync();
-            if (chapters == null || chapters.Count == 0)
-                return NotFound("Không tìm thấy bài nào.");
-
-            var dto = _mapper.Map<List<ChapterDTO>>(chapters);
-            return Ok(dto);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetChapterById(int id)
-        {
-            var chapter = await _chapterService.GetByIdAsync(id);
-            if (chapter == null)
-                return NotFound("Bài không tồn tại.");
-
-            var dto = _mapper.Map<ChapterDTO>(chapter);
-            return Ok(dto);
-        }
-
-       
-
-        [HttpGet("filter-name")]
-        public async Task<IActionResult> GetChaptersByContainName([FromQuery] string? name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest(new { message = "Từ khóa tìm kiếm không được để trống." });
-            var list = await _chapterService.GetListChaptersByContainNameAsync(name);
-            if (list == null || list.Count == 0)
-                return NotFound("Không có bài phù hợp với từ khóa tìm kiếm.");
-
-            var dto = _mapper.Map<List<ChapterDTO>>(list);
-            return Ok(dto);
-        }
-
-        [HttpGet("by-subject/{subjectId}")]
-        public async Task<IActionResult> GetTopicsByChapterId(int subjectId)
-        {
-            var chapters = await _chapterService.GetListChaptersBySubjectIdAsync(subjectId);
-
-            if (chapters == null || chapters.Count == 0)
-                return NotFound("Không có bài nào trong chương này.");
-
-            var dto = _mapper.Map<List<ChapterDTO>>(chapters);
-            return Ok(dto);
-        }
+    
         [HttpPost]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> CreateChapter([FromBody] CreateChapterDTO chapterDto)
         {
             if (!ModelState.IsValid)
@@ -100,6 +56,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> UpdateChapter([FromBody] UpdateChapterDTO chapterDto)
         {
             if (!ModelState.IsValid)
@@ -127,6 +84,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "2,3")]
         public async Task<IActionResult> GetChapters(
     [FromQuery] int? id,
     [FromQuery] string? name,
@@ -173,6 +131,7 @@ namespace BiologyRecognition.Controller.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "3")]
         public async Task<IActionResult> Delete(int id)
         {
             var chapter = await _chapterService.GetByIdAsync(id);
