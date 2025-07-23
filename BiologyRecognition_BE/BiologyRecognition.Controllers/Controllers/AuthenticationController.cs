@@ -98,7 +98,7 @@ namespace BiologyRecognition.Controller.Controllers
                 //    return Unauthorized("Login failed. Email not found");
 
                 var user = await _authenticationService.LoginWithGoolgle(email, name);
-                var redirectUrl = $"http://localhost:5173?accessToken={user.AccessToken}"; // hardcode FE, sau này sẽ thay bằng config
+                var redirectUrl = $"https://se-1709-swd-392-g4-fe.vercel.app/?accessToken={user.AccessToken}"; // hardcode FE, sau này sẽ thay bằng config
                 // Gắn access token vào cookie
                 Response.Cookies.Append("access_token", user.AccessToken, new CookieOptions
                 {

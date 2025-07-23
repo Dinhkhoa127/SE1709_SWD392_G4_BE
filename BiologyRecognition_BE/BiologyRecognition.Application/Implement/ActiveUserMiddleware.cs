@@ -11,49 +11,47 @@ namespace BiologyRecognition.Application.Implement
 {
     public class ActiveUserMiddleware
     {
-        private readonly RequestDelegate _next;
-        private readonly UserAccountRepository _repository;
-        private static readonly string[] _excludedPaths = new[]
-    {
-    "/api/authentication/logout",
-    };
+	//	private readonly RequestDelegate _next;
 
-        public ActiveUserMiddleware(RequestDelegate next)
-        {
-            _next = next;
-            _repository = new UserAccountRepository();
-        }
+	//	public ActiveUserMiddleware(RequestDelegate next)
+	//	{
+	//		_next = next;
+	//	}
 
-        public async Task InvokeAsync(HttpContext context)
-        {
+	//	public async Task InvokeAsync(HttpContext context, UserAccountRepository repository)
+	//	{
+	//		var requestPath = context.Request.Path.Value?.ToLower();
 
-            var requestPath = context.Request.Path.Value?.ToLower();
+	//		if (_excludedPaths.Contains(requestPath))
+	//		{
+	//			await _next(context);
+	//			return;
+	//		}
 
-            // Nếu route nằm trong danh sách loại trừ → bỏ qua kiểm tra IsActive
-            if (_excludedPaths.Contains(requestPath))
-            {
-                await _next(context);
-                return;
-            }
-            if (context.User.Identity.IsAuthenticated)
-            {
-                var userIdClaim = context.User.FindFirst("Id")?.Value;
+	//		if (context.User.Identity.IsAuthenticated)
+	//		{
+	//			var userIdClaim = context.User.FindFirst("Id")?.Value;
 
-                if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out int userId))
-                {
-                    var user = await _repository.GetByIdAsync(userId);
+	//			if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out int userId))
+	//			{
+	//				var user = await repository.GetByIdAsync(userId); // Dùng DI
 
-                    if (user != null && !user.IsActive)
-                    {
-                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        await context.Response.WriteAsync("Your account has been banned.");
-                        return;
-                    }
-                }
-            }
+	//				if (user != null && !user.IsActive)
+	//				{
+	//					context.Response.StatusCode = StatusCodes.Status403Forbidden;
+	//					await context.Response.WriteAsync("Your account has been banned.");
+	//					return;
+	//				}
+	//			}
+	//		}
 
-            await _next(context);
-        }
-    }
+	//		await _next(context);
+	//	}
+
+	//	private static readonly string[] _excludedPaths = new[]
+	//	{
+	//	"/api/authentication/logout"
+	//};
+	}
 
 }

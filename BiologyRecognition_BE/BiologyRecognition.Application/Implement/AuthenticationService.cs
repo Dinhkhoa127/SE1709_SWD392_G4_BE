@@ -133,7 +133,7 @@ namespace BiologyRecognition.Application.Implement
                     IsActive = true,
                     ModifiedDate = DateTime.Now,
                     Password = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()), // Tạo mật khẩu ngẫu nhiên
-                    RoleId = 2 // Default role registered là user
+                    RoleId = 3 // Default role registered là lecturer
                 };
                 await _userRepository.CreateAsync(newAccount);
                 accessToken = await GenerateToken(_mapper.Map<AccountResponseDTO>(newAccount));

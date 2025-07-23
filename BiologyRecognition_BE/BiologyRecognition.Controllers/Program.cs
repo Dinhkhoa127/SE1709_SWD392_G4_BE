@@ -179,7 +179,7 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseCors("AllowReactApp"); // Phải use CORS trước Authentication và Authorization
 app.UseAuthentication();
-app.UseMiddleware<ActiveUserMiddleware>();
+//app.UseMiddleware<ActiveUserMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 
