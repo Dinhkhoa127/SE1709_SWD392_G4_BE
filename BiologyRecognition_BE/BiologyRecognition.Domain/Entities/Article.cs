@@ -13,7 +13,7 @@ public partial class Article
 
     public string Content { get; set; }
 
-    public int? CreatedBy { get; set; }
+    public int CreatedBy { get; set; }
 
     public DateTime CreatedDate { get; set; }
 

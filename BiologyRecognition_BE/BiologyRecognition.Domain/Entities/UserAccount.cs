@@ -19,23 +19,17 @@ public partial class UserAccount
 
     public string Phone { get; set; }
 
-    public string EmployeeCode { get; set; }
-
-    public int? RoleId { get; set; }
-
-    public string RequestCode { get; set; }
+    public int RoleId { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
-    public string ApplicationCode { get; set; }
-
-    public string CreatedBy { get; set; }
-
     public DateTime? ModifiedDate { get; set; }
 
-    public string ModifiedBy { get; set; }
+    public bool IsActive { get; set; }
 
-    public bool? IsActive { get; set; }
+    public string OtpCode { get; set; }
+
+    public DateTime? OtpExpiry { get; set; }
 
     public virtual ICollection<Article> ArticleCreatedByNavigations { get; set; } = new List<Article>();
 

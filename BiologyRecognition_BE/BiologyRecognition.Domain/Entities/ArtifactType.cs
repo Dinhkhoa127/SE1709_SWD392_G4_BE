@@ -9,15 +9,13 @@ public partial class ArtifactType
 {
     public int ArtifactTypeId { get; set; }
 
-    public int ArtifactId { get; set; }
+    public int TopicId { get; set; }
 
     public string Name { get; set; }
 
-    public string Type { get; set; }
-
-    public string ArtifactUrl { get; set; }
-
     public string Description { get; set; }
 
-    public virtual Artifact Artifact { get; set; }
+    public virtual ICollection<Artifact> Artifacts { get; set; } = new List<Artifact>();
+
+    public virtual Topic Topic { get; set; }
 }

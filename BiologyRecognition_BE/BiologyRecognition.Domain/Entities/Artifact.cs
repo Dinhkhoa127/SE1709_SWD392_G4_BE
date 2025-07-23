@@ -9,7 +9,9 @@ public partial class Artifact
 {
     public int ArtifactId { get; set; }
 
-    public int TopicId { get; set; }
+    public string ArtifactCode { get; set; }
+
+    public int ArtifactTypeId { get; set; }
 
     public string Name { get; set; }
 
@@ -17,7 +19,7 @@ public partial class Artifact
 
     public string ScientificName { get; set; }
 
-    public int? CreatedBy { get; set; }
+    public int CreatedBy { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
@@ -25,17 +27,15 @@ public partial class Artifact
 
     public DateTime? ModifiedDate { get; set; }
 
-    public virtual ICollection<ArtifactImage> ArtifactImages { get; set; } = new List<ArtifactImage>();
+    public virtual ICollection<ArtifactMedia> ArtifactMedia { get; set; } = new List<ArtifactMedia>();
 
-    public virtual ICollection<ArtifactType> ArtifactTypes { get; set; } = new List<ArtifactType>();
+    public virtual ArtifactType ArtifactType { get; set; }
 
     public virtual UserAccount CreatedByNavigation { get; set; }
 
     public virtual UserAccount ModifiedByNavigation { get; set; }
 
     public virtual ICollection<Recognition> Recognitions { get; set; } = new List<Recognition>();
-
-    public virtual Topic Topic { get; set; }
 
     public virtual ICollection<Article> Articles { get; set; } = new List<Article>();
 }

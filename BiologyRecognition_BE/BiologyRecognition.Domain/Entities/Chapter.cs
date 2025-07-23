@@ -15,7 +15,7 @@ public partial class Chapter
 
     public string Description { get; set; }
 
-    public int? CreatedBy { get; set; }
+    public int CreatedBy { get; set; }
 
     public DateTime CreatedDate { get; set; }
 

@@ -5,11 +5,13 @@ using System.Collections.Generic;
 
 namespace BiologyRecognition.Domain.Entities;
 
-public partial class ArtifactImage
+public partial class ArtifactMedia
 {
-    public int ImageId { get; set; }
+    public int ArtifactMediaId { get; set; }
 
     public int ArtifactId { get; set; }
+
+    public string Type { get; set; }
 
     public string Url { get; set; }
 

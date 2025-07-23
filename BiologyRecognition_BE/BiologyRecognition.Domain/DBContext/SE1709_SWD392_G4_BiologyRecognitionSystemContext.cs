@@ -23,7 +23,7 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
     public virtual DbSet<Artifact> Artifacts { get; set; }
 
-    public virtual DbSet<ArtifactImage> ArtifactImages { get; set; }
+    public virtual DbSet<ArtifactMedia> ArtifactMedia { get; set; }
 
     public virtual DbSet<ArtifactType> ArtifactTypes { get; set; }
 
@@ -50,12 +50,11 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Article>(entity =>
         {
-            entity.HasKey(e => e.ArticleId).HasName("PK__Article__CC36F660B89B0C28");
+            entity.HasKey(e => e.ArticleId).HasName("PK__Article__CC36F6600C477651");
 
             entity.ToTable("Article");
 
@@ -72,11 +71,12 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ArticleCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Article__Created__7B5B524B");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Article__Created__59FA5E80");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.ArticleModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Article__Modifie__7C4F7684");
+                .HasConstraintName("FK__Article__Modifie__5AEE82B9");
 
             entity.HasMany(d => d.Artifacts).WithMany(p => p.Articles)
                 .UsingEntity<Dictionary<string, object>>(
@@ -84,14 +84,14 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
                     r => r.HasOne<Artifact>().WithMany()
                         .HasForeignKey("ArtifactId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__ArticleAr__artif__00200768"),
+                        .HasConstraintName("FK__ArticleAr__artif__5EBF139D"),
                     l => l.HasOne<Article>().WithMany()
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__ArticleAr__artic__7F2BE32F"),
+                        .HasConstraintName("FK__ArticleAr__artic__5DCAEF64"),
                     j =>
                     {
-                        j.HasKey("ArticleId", "ArtifactId").HasName("PK__ArticleA__2631BC16ED6E2D6D");
+                        j.HasKey("ArticleId", "ArtifactId").HasName("PK__ArticleA__2631BC16D0A8774A");
                         j.ToTable("ArticleArtifact");
                         j.IndexerProperty<int>("ArticleId").HasColumnName("article_id");
                         j.IndexerProperty<int>("ArtifactId").HasColumnName("artifact_id");
@@ -100,11 +100,18 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
         modelBuilder.Entity<Artifact>(entity =>
         {
-            entity.HasKey(e => e.ArtifactId).HasName("PK__Artifact__A074A76FD05D28A5");
+            entity.HasKey(e => e.ArtifactId).HasName("PK__Artifact__A074A76FC29A74E4");
 
             entity.ToTable("Artifact");
 
+            entity.HasIndex(e => e.ArtifactCode, "UQ__Artifact__691210D36FE4934B").IsUnique();
+
             entity.Property(e => e.ArtifactId).HasColumnName("artifact_id");
+            entity.Property(e => e.ArtifactCode)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasColumnName("artifact_code");
+            entity.Property(e => e.ArtifactTypeId).HasColumnName("artifact_type_id");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -117,73 +124,67 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
             entity.Property(e => e.ScientificName)
                 .HasMaxLength(100)
                 .HasColumnName("scientific_name");
-            entity.Property(e => e.TopicId).HasColumnName("topic_id");
+
+            entity.HasOne(d => d.ArtifactType).WithMany(p => p.Artifacts)
+                .HasForeignKey(d => d.ArtifactTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Artifact__artifa__5441852A");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ArtifactCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Artifact__Create__73BA3083");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Artifact__Create__5535A963");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.ArtifactModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Artifact__Modifi__74AE54BC");
-
-            entity.HasOne(d => d.Topic).WithMany(p => p.Artifacts)
-                .HasForeignKey(d => d.TopicId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Artifact__topic___72C60C4A");
+                .HasConstraintName("FK__Artifact__Modifi__5629CD9C");
         });
 
-        modelBuilder.Entity<ArtifactImage>(entity =>
+        modelBuilder.Entity<ArtifactMedia>(entity =>
         {
-            entity.HasKey(e => e.ImageId).HasName("PK__Artifact__DC9AC9557B8C6F30");
+            entity.HasKey(e => e.ArtifactMediaId).HasName("PK__Artifact__6FE871974F59E2FA");
 
-            entity.ToTable("ArtifactImage");
-
-            entity.Property(e => e.ImageId).HasColumnName("image_id");
+            entity.Property(e => e.ArtifactMediaId).HasColumnName("artifactMedia_id");
             entity.Property(e => e.ArtifactId).HasColumnName("artifact_id");
             entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Type)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasColumnName("type");
             entity.Property(e => e.Url)
                 .IsRequired()
                 .HasMaxLength(255)
                 .HasColumnName("url");
 
-            entity.HasOne(d => d.Artifact).WithMany(p => p.ArtifactImages)
+            entity.HasOne(d => d.Artifact).WithMany(p => p.ArtifactMedia)
                 .HasForeignKey(d => d.ArtifactId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ArtifactI__artif__02FC7413");
+                .HasConstraintName("FK__ArtifactM__artif__619B8048");
         });
 
         modelBuilder.Entity<ArtifactType>(entity =>
         {
-            entity.HasKey(e => e.ArtifactTypeId).HasName("PK__Artifact__DFAFE6906E4269F1");
+            entity.HasKey(e => e.ArtifactTypeId).HasName("PK__Artifact__DFAFE6909314E6AB");
 
             entity.ToTable("ArtifactType");
 
             entity.Property(e => e.ArtifactTypeId).HasColumnName("artifact_type_id");
-            entity.Property(e => e.ArtifactId).HasColumnName("artifact_id");
-            entity.Property(e => e.ArtifactUrl)
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnName("artifactURL");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100)
                 .HasColumnName("name");
-            entity.Property(e => e.Type)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasColumnName("type");
+            entity.Property(e => e.TopicId).HasColumnName("topic_id");
 
-            entity.HasOne(d => d.Artifact).WithMany(p => p.ArtifactTypes)
-                .HasForeignKey(d => d.ArtifactId)
+            entity.HasOne(d => d.Topic).WithMany(p => p.ArtifactTypes)
+                .HasForeignKey(d => d.TopicId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ArtifactT__artif__778AC167");
+                .HasConstraintName("FK__ArtifactT__topic__4E88ABD4");
         });
 
         modelBuilder.Entity<Chapter>(entity =>
         {
-            entity.HasKey(e => e.ChapterId).HasName("PK__Chapter__745EFE8747724465");
+            entity.HasKey(e => e.ChapterId).HasName("PK__Chapter__745EFE87410DBF9F");
 
             entity.ToTable("Chapter");
 
@@ -201,21 +202,22 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ChapterCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Chapter__Created__68487DD7");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Chapter__Created__44FF419A");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.ChapterModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Chapter__Modifie__693CA210");
+                .HasConstraintName("FK__Chapter__Modifie__45F365D3");
 
             entity.HasOne(d => d.Subject).WithMany(p => p.Chapters)
                 .HasForeignKey(d => d.SubjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Chapter__subject__6754599E");
+                .HasConstraintName("FK__Chapter__subject__440B1D61");
         });
 
         modelBuilder.Entity<Recognition>(entity =>
         {
-            entity.HasKey(e => e.RecognitionId).HasName("PK__Recognit__73D1F5ADEB3D6421");
+            entity.HasKey(e => e.RecognitionId).HasName("PK__Recognit__73D1F5AD2F8C7C48");
 
             entity.ToTable("Recognition");
 
@@ -233,22 +235,23 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
                 .HasColumnName("recognized_at");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
-                .HasDefaultValue("pending")
+                .HasDefaultValue("PENDING")
                 .HasColumnName("status");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.Artifact).WithMany(p => p.Recognitions)
                 .HasForeignKey(d => d.ArtifactId)
-                .HasConstraintName("FK__Recogniti__artif__07C12930");
+                .HasConstraintName("FK__Recogniti__artif__6754599E");
 
             entity.HasOne(d => d.User).WithMany(p => p.Recognitions)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Recogniti__user___08B54D69");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Recogniti__user___68487DD7");
         });
 
         modelBuilder.Entity<Subject>(entity =>
         {
-            entity.HasKey(e => e.SubjectId).HasName("PK__Subject__5004F660E3202947");
+            entity.HasKey(e => e.SubjectId).HasName("PK__Subject__5004F6603A4A13D0");
 
             entity.ToTable("Subject");
 
@@ -265,16 +268,17 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.SubjectCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Subject__Created__628FA481");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Subject__Created__3F466844");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.SubjectModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Subject__Modifie__6383C8BA");
+                .HasConstraintName("FK__Subject__Modifie__403A8C7D");
         });
 
         modelBuilder.Entity<Topic>(entity =>
         {
-            entity.HasKey(e => e.TopicId).HasName("PK__Topic__D5DAA3E9A05099F2");
+            entity.HasKey(e => e.TopicId).HasName("PK__Topic__D5DAA3E9123F0B0B");
 
             entity.ToTable("Topic");
 
@@ -293,42 +297,45 @@ public partial class SE1709_SWD392_G4_BiologyRecognitionSystemContext : DbContex
             entity.HasOne(d => d.Chapter).WithMany(p => p.Topics)
                 .HasForeignKey(d => d.ChapterId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Topic__chapter_i__6D0D32F4");
+                .HasConstraintName("FK__Topic__chapter_i__49C3F6B7");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.TopicCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Topic__CreatedBy__6E01572D");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Topic__CreatedBy__4AB81AF0");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.TopicModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Topic__ModifiedB__6EF57B66");
+                .HasConstraintName("FK__Topic__ModifiedB__4BAC3F29");
         });
 
         modelBuilder.Entity<UserAccount>(entity =>
         {
-            entity.HasKey(e => e.UserAccountId).HasName("PK__UserAcco__DA6C70BA3B9E5663");
+            entity.HasKey(e => e.UserAccountId).HasName("PK__UserAcco__DA6C70BA343B240C");
 
             entity.ToTable("UserAccount");
 
-            entity.HasIndex(e => e.UserName, "UQ__UserAcco__C9F284565CE815D3").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__UserAcco__A9D105341BBA32B9").IsUnique();
+
+            entity.HasIndex(e => e.UserName, "UQ__UserAcco__C9F28456720B14E2").IsUnique();
 
             entity.Property(e => e.UserAccountId).HasColumnName("UserAccountID");
-            entity.Property(e => e.ApplicationCode).HasMaxLength(50);
-            entity.Property(e => e.CreatedBy).HasMaxLength(50);
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.EmployeeCode).HasMaxLength(50);
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(100);
             entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
-            entity.Property(e => e.ModifiedBy).HasMaxLength(50);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.OtpCode).HasMaxLength(100);
+            entity.Property(e => e.OtpExpiry).HasColumnType("datetime");
             entity.Property(e => e.Password)
                 .IsRequired()
                 .HasMaxLength(255);
             entity.Property(e => e.Phone).HasMaxLength(20);
-            entity.Property(e => e.RequestCode).HasMaxLength(50);
+            entity.Property(e => e.RoleId).HasDefaultValue(2);
             entity.Property(e => e.UserName)
                 .IsRequired()
                 .HasMaxLength(50);
