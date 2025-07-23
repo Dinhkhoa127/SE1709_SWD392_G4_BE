@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BloodDonation.Repositories.NhanNB.Basic
+namespace BiologyRecognition.Infrastructure.Basic
 {
     public class GenericRepository<T> where T : class
     {
